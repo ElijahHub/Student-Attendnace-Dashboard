@@ -12,9 +12,6 @@ export async function middleware(req: NextRequest) {
   const isAuthPage = req.nextUrl.pathname.startsWith("/auth");
 
   const userRole = token?.role.toLowerCase();
-  // If the user is not an admin and trying to access any page, redirect to the unauthorized page
-
-  console.log(userRole);
 
   if (isAuth && userRole !== "admin")
     return NextResponse.redirect(new URL("/unauthorized", req.url));
