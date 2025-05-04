@@ -48,7 +48,7 @@ export function useUpdateLecturer() {
       id: string;
       data: Lecturer;
     }): Promise<Lecturer> => {
-      const res = await makeRequest.patch(`/lecturers/${id}`, data);
+      const res = await makeRequest.patch(`/user/update/${id}`, data);
       return res.data;
     },
     onSuccess: () => {

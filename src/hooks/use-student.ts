@@ -2,7 +2,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { makeRequest } from "@/utils";
 import { Student } from "@/types";
 
-export function useLecturers() {
+export function useStudents() {
   return useQuery({
     queryKey: ["students"],
     queryFn: async (): Promise<Student[]> => {
@@ -12,7 +12,7 @@ export function useLecturers() {
   });
 }
 
-export function useLecturer(id: string) {
+export function useStudent(id: string) {
   return useQuery({
     queryKey: ["students"],
     queryFn: async (): Promise<Student> => {
@@ -23,7 +23,7 @@ export function useLecturer(id: string) {
   });
 }
 
-export function useCreateLecturer() {
+export function useCreateStudent() {
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -37,7 +37,7 @@ export function useCreateLecturer() {
   });
 }
 
-export function useUpdateLecturer() {
+export function useUpdateStudent() {
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -48,7 +48,7 @@ export function useUpdateLecturer() {
       id: string;
       data: Student;
     }): Promise<Student> => {
-      const res = await makeRequest.patch(`/students/${id}`, data);
+      const res = await makeRequest.patch(`/user/update/${id}`, data);
       return res.data;
     },
     onSuccess: () => {
@@ -57,7 +57,7 @@ export function useUpdateLecturer() {
   });
 }
 
-export function useDeleteLecturer() {
+export function useDeleteStudent() {
   const queryClient = useQueryClient();
 
   return useMutation({
