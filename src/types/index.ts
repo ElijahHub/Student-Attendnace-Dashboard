@@ -1,13 +1,11 @@
 export interface Lecturer {
-  id: string;
+  id?: string;
   name: string;
   email: string;
-  courses: string[];
-  noOfCourse: number;
 }
 
 export interface Student {
-  id: string;
+  id?: string;
   name: string;
   email: string;
   matNumber: string;
@@ -17,7 +15,7 @@ export interface Course {
   id: string;
   courseName: string;
   courseCode: string;
-  description: string;
+  description?: string;
   lecturerId?: string[];
   lecturers?: Lecturer[];
 }
