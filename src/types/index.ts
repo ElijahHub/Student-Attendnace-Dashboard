@@ -1,24 +1,26 @@
-export interface Lecturer {
-  id?: string;
+export interface LecturerFormValue {
   name: string;
   email: string;
 }
 
-export interface Student {
-  id?: string;
+export type Lecturer = { id: string } & LecturerFormValue;
+
+export interface StudentFormValue {
   name: string;
   email: string;
   matNumber: string;
 }
 
-export interface Course {
-  id: string;
+export type Student = { id: string } & StudentFormValue;
+
+export interface CourseFormValue {
   courseName: string;
   courseCode: string;
   description?: string;
-  lecturerId?: string[];
-  lecturers?: Lecturer[];
+  lecturersId: string[];
 }
+
+export type Course = { id: string } & CourseFormValue;
 
 export interface DashBoardStats {
   totalStudents: number;
@@ -63,4 +65,28 @@ export interface PageHeaderProps {
   description?: string;
   children?: React.ReactNode;
   className?: string;
+}
+
+export interface CourseFormProps {
+  open: boolean;
+  onClose: () => void;
+  onSubmit: (data: CourseFormValue) => void;
+  defaultValues?: CourseFormValue;
+  isSubmitting?: boolean;
+}
+
+export interface StudentFormProps {
+  open: boolean;
+  onClose: () => void;
+  onSubmit: (data: StudentFormValue) => void;
+  defaultValues?: Student;
+  isSubmitting?: boolean;
+}
+
+export interface LecturerFormProps {
+  open: boolean;
+  onClose: () => void;
+  onSubmit: (data: LecturerFormValue) => void;
+  defaultValues?: Lecturer;
+  isSubmitting?: boolean;
 }
