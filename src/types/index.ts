@@ -57,7 +57,6 @@ export interface SidebarItemProps {
   title: string;
   isActive: boolean;
   isCollapsed: boolean;
-  children?: React.ReactNode;
 }
 
 export interface PageHeaderProps {
