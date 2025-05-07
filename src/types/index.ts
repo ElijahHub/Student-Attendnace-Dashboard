@@ -89,3 +89,14 @@ export interface LecturerFormProps {
   defaultValues?: Lecturer;
   isSubmitting?: boolean;
 }
+
+export interface Column {
+  key: string;
+  label: string;
+}
+export interface DataTableProps {
+  columns: Column[];
+  data: Record<string, any>[];
+  isLoading: Boolean;
+  emptyText?: string;
+}
