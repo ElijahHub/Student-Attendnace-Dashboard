@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { makeRequest } from "@/utils";
-import { Lecturer } from "@/types";
+import { Lecturer, LecturerFormValue } from "@/types";
 
 export function useLecturers() {
   return useQuery({
@@ -27,7 +27,7 @@ export function useCreateLecturer() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (data: Lecturer): Promise<Lecturer> => {
+    mutationFn: async (data: LecturerFormValue): Promise<Lecturer> => {
       const res = await makeRequest.post("/lecturers", data);
       return res.data;
     },
@@ -46,7 +46,7 @@ export function useUpdateLecturer() {
       data,
     }: {
       id: string;
-      data: Lecturer;
+      data: LecturerFormValue;
     }): Promise<Lecturer> => {
       const res = await makeRequest.patch(`/user/update/${id}`, data);
       return res.data;

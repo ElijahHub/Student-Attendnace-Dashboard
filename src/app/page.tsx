@@ -1,9 +1,35 @@
 "use client";
 
-import { useSession } from "next-auth/react";
+import { useEffect } from "react";
+import Link from "next/link";
+import { useRouter } from "next/router";
+import { Button } from "@heroui/react";
+import { BookOpen } from "lucide-react";
 
 export default function Home() {
-  const { data: session } = useSession();
+  return (
+    <div className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-background to-secondary/20 p-4">
+      <div className="text-center">
+        <div className="mb-6 flex justify-center">
+          <div className="rounded-full bg-primary/10 p-4">
+            <BookOpen size={64} className="text-primary" />
+          </div>
+        </div>
 
-  return <div>Welcome {session?.user.email}</div>;
+        <h1 className="mb-3 text-4xl font-bold tracking-tight">
+          Admin Dashboard
+        </h1>
+        <p className="mb-6 max-w-md text-muted-foreground">
+          Comprehensive management system for university courses, students, and
+          faculty.
+        </p>
+
+        <Link href="/dashboard">Enter Dashboard</Link>
+
+        <p className="mt-8 text-sm text-muted-foreground">
+          Redirecting to dashboard...
+        </p>
+      </div>
+    </div>
+  );
 }

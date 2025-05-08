@@ -43,7 +43,7 @@ const handler = NextAuth({
       async authorize(credentials) {
         try {
           const res = await axios.post(
-            `http://127.0.0.1:8800/api/v1/user/admin/login`,
+            `http://127.0.0.1:8800/api/v1/admin/login`,
             {
               email: credentials?.email,
               password: credentials?.password,

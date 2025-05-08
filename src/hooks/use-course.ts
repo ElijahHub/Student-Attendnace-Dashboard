@@ -1,6 +1,6 @@
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { makeRequest } from "@/utils";
-import { Course } from "@/types";
+import { Course, CourseFormValue } from "@/types";
 
 export function useCourses() {
   return useQuery({
@@ -27,7 +27,7 @@ export function useCreateCourse() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (data: Course): Promise<Course> => {
+    mutationFn: async (data: CourseFormValue): Promise<Course> => {
       const res = await makeRequest.post("/courses", data);
       return res.data;
     },
@@ -46,7 +46,7 @@ export function useUpdateCourse() {
       data,
     }: {
       id: string;
-      data: Course;
+      data: CourseFormValue;
     }): Promise<Course> => {
       const res = await makeRequest.patch(`/courses/update/${id}`, data);
       return res.data;
