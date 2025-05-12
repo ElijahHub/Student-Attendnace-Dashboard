@@ -48,7 +48,12 @@ export default function StudentForm({
   };
 
   return (
-    <Modal isOpen={open} placement="top-center" onOpenChange={onClose}>
+    <Modal
+      isOpen={open}
+      placement="center"
+      onOpenChange={onClose}
+      className="bg-black"
+    >
       <ModalContent className="sm:max-w-[500px]">
         {(closeModal) => (
           <>

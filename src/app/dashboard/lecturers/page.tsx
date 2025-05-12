@@ -2,7 +2,16 @@
 
 import { useState, useEffect } from "react";
 import { PageHeader, LecturerForm, DataTable } from "@/components";
-import { Button, Alert } from "@heroui/react";
+import {
+  Button,
+  Alert,
+  useDisclosure,
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalHeader,
+  ModalFooter,
+} from "@heroui/react";
 import { Column, Lecturer, LecturerFormValue } from "@/types";
 import {
   useLecturers,
@@ -24,6 +33,8 @@ export default function LecturersPage() {
     null
   );
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
   // Open create form
   const handleAddNew = () => {
@@ -90,29 +101,37 @@ export default function LecturersPage() {
   ];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 relative ">
       <PageHeader title="Lecturers" description="Manage university lecturers">
-        <Button onPress={handleAddNew}>
+        <Button onPress={onOpen} className="flex justify-center items-center">
           <PlusIcon className="mr-2 h-4 w-4" />
           Add New Lecturer
         </Button>
       </PageHeader>
-
       <DataTable
-        data={lecturers || []}
+        data={[]}
         columns={columns}
-        isLoading={isLoading}
+        isLoading={false}
         emptyText="No lecturers found. Add your first lecturer to get started!"
       />
-
       {/* Lecturer form modal */}
       <LecturerForm
-        open={isFormOpen}
-        onClose={() => setIsFormOpen(false)}
+        open={isOpen}
+        onClose={() => onOpenChange}
         onSubmit={handleFormSubmit}
         defaultValues={selectedLecturer || undefined}
         isSubmitting={isSubmitting}
       />
+
+      <Modal
+        isOpen={true}
+        placement="center"
+        onOpenChange={onOpenChange}
+        className="bg-black z-40 "
+      >
+        <ModalHeader>Header modal</ModalHeader>
+        <ModalContent>kdkdkdkdk</ModalContent>
+      </Modal>
     </div>
   );
 }

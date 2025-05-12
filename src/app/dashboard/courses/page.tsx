@@ -1,7 +1,14 @@
 "use client ";
 
 import { useState } from "react";
-import { Button, Badge, Alert, useToast, useAlert } from "@heroui/react";
+import {
+  Button,
+  Badge,
+  Alert,
+  useToast,
+  useAlert,
+  useDisclosure,
+} from "@heroui/react";
 import { PageHeader, DataTable, CourseForm } from "@/components";
 import {
   useCourses,
@@ -22,6 +29,8 @@ export default function CoursesPage() {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
   // Open create form
   const handleAddNew = () => {
@@ -95,16 +104,19 @@ export default function CoursesPage() {
   return (
     <div className="space-y-6">
       <PageHeader title="Courses" description="Manage Courses">
-        <Button onPress={handleAddNew}>
+        <Button
+          onPress={handleAddNew}
+          className="flex justify-center items-center"
+        >
           <PlusIcon className="mr-2 h-4 w-4" />
           Add New Course
         </Button>
       </PageHeader>
 
       <DataTable
-        data={courses || []}
+        data={[]}
         columns={columns}
-        isLoading={isLoading}
+        isLoading={false}
         emptyText="No courses found. Add course to get started!"
       />
 

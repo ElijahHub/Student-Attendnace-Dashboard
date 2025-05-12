@@ -95,16 +95,19 @@ export default function StudentsPage() {
   return (
     <div className="space-y-6">
       <PageHeader title="Students" description="Manage university students">
-        <Button onPress={handleAddNew}>
+        <Button
+          onPress={handleAddNew}
+          className="flex justify-center items-center"
+        >
           <PlusIcon className="mr-2 h-4 w-4" />
           Add New Student
         </Button>
       </PageHeader>
 
       <DataTable
-        data={students || []}
+        data={[]}
         columns={columns}
-        isLoading={isLoading}
+        isLoading={false}
         emptyText="No students found. Add your first student to get started!"
       />
 
