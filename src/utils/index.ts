@@ -4,7 +4,7 @@ import { twMerge } from "tailwind-merge";
 import { format } from "date-fns";
 
 export const makeRequest = axios.create({
-  baseURL: process.env.NEXT_BACKEND_URL,
+  baseURL: "http://127.0.0.1:8800/api/v1",
   headers: {
     "Content-Type": "application/json",
   },

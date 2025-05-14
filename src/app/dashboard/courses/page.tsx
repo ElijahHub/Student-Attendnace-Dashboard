@@ -1,15 +1,8 @@
 "use client ";
 
 import { useState } from "react";
-import {
-  Button,
-  Badge,
-  Alert,
-  useToast,
-  useAlert,
-  useDisclosure,
-} from "@heroui/react";
-import { PageHeader, DataTable, CourseForm } from "@/components";
+import { Button, Badge, Alert, useToast, useAlert } from "@heroui/react";
+import { PageHeader, DataTable } from "@/components";
 import {
   useCourses,
   useCreateCourse,
@@ -24,63 +17,6 @@ export default function CoursesPage() {
   const createCourseMutation = useCreateCourse();
   const updateCourseMutation = useUpdateCourse();
   const deleteCourseMutation = useDeleteCourse();
-
-  const [isFormOpen, setIsFormOpen] = useState(false);
-  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const { isOpen, onOpen, onOpenChange } = useDisclosure();
-
-  // Open create form
-  const handleAddNew = () => {
-    setSelectedCourse(null);
-    setIsFormOpen(true);
-  };
-
-  // Open edit form
-  const handleEdit = (course: Course) => {
-    setSelectedCourse(course);
-    setIsFormOpen(true);
-  };
-
-  // Open delete dialog
-  const handleDeleteClick = (course: Course) => {
-    setSelectedCourse(course);
-    setIsDeleteDialogOpen(true);
-  };
-
-  // Create or update course
-  const handleFormSubmit = async (data: CourseFormValue) => {
-    setIsSubmitting(true);
-
-    try {
-      if (selectedCourse) {
-        await updateCourseMutation.mutateAsync({
-          id: selectedCourse.id,
-          data,
-        });
-      } else {
-        await createCourseMutation.mutateAsync(data);
-      }
-      setIsFormOpen(false);
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  //Delete course
-  const handleDelete = async () => {
-    if (!selectedCourse) return;
-    try {
-      await deleteCourseMutation.mutateAsync(selectedCourse.id);
-      setIsDeleteDialogOpen(false);
-    } catch (error) {
-      console.log(error);
-    }
-  };
 
   const columns: Column[] = [
     {
@@ -101,13 +37,12 @@ export default function CoursesPage() {
     },
   ];
 
+  console.log(courses);
+
   return (
     <div className="space-y-6">
       <PageHeader title="Courses" description="Manage Courses">
-        <Button
-          onPress={handleAddNew}
-          className="flex justify-center items-center"
-        >
+        <Button className="flex justify-center items-center">
           <PlusIcon className="mr-2 h-4 w-4" />
           Add New Course
         </Button>
@@ -118,14 +53,6 @@ export default function CoursesPage() {
         columns={columns}
         isLoading={false}
         emptyText="No courses found. Add course to get started!"
-      />
-
-      <CourseForm
-        open={isFormOpen}
-        onClose={() => setIsFormOpen(false)}
-        onSubmit={handleFormSubmit}
-        defaultValues={selectedCourse || undefined}
-        isSubmitting={isSubmitting}
       />
     </div>
   );

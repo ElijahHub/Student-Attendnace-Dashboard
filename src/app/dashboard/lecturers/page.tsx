@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { PageHeader, LecturerForm, DataTable } from "@/components";
+import { PageHeader, DataTable } from "@/components";
 import {
   Button,
   Alert,
@@ -27,68 +27,6 @@ export default function LecturersPage() {
   const updateLecturerMutation = useUpdateLecturer();
   const deleteLecturerMutation = useDeleteLecturer();
 
-  const [isFormOpen, setIsFormOpen] = useState(false);
-  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  const [selectedLecturer, setSelectedLecturer] = useState<Lecturer | null>(
-    null
-  );
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const { isOpen, onOpen, onOpenChange } = useDisclosure();
-
-  // Open create form
-  const handleAddNew = () => {
-    setSelectedLecturer(null);
-    setIsFormOpen(true);
-  };
-
-  // Open edit form
-  const handleEdit = (lecturer: Lecturer) => {
-    setSelectedLecturer(lecturer);
-    setIsFormOpen(true);
-  };
-
-  // Open delete dialog
-  const handleDeleteClick = (lecturer: Lecturer) => {
-    setSelectedLecturer(lecturer);
-    setIsDeleteDialogOpen(true);
-  };
-
-  //Create or Update Lecturer
-  const handleFormSubmit = async (data: LecturerFormValue) => {
-    setIsSubmitting(true);
-
-    try {
-      if (selectedLecturer) {
-        // Update
-        await updateLecturerMutation.mutateAsync({
-          id: selectedLecturer.id,
-          data,
-        });
-      } else {
-        // Create
-        await createLecturerMutation.mutateAsync(data);
-      }
-      setIsFormOpen(false);
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  // Delete lecturer
-  const handleDelete = async () => {
-    if (!selectedLecturer) return;
-
-    try {
-      await deleteLecturerMutation.mutateAsync(selectedLecturer.id);
-      setIsDeleteDialogOpen(false);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
   const columns: Column[] = [
     {
       key: "name",
@@ -100,38 +38,23 @@ export default function LecturersPage() {
     },
   ];
 
+  console.log(lecturers);
+
   return (
     <div className="space-y-6 relative ">
       <PageHeader title="Lecturers" description="Manage university lecturers">
-        <Button onPress={onOpen} className="flex justify-center items-center">
+        <Button className="flex justify-center items-center">
           <PlusIcon className="mr-2 h-4 w-4" />
           Add New Lecturer
         </Button>
       </PageHeader>
       <DataTable
-        data={[]}
+        data={lecturers || []}
         columns={columns}
         isLoading={false}
         emptyText="No lecturers found. Add your first lecturer to get started!"
       />
       {/* Lecturer form modal */}
-      <LecturerForm
-        open={isOpen}
-        onClose={() => onOpenChange}
-        onSubmit={handleFormSubmit}
-        defaultValues={selectedLecturer || undefined}
-        isSubmitting={isSubmitting}
-      />
-
-      <Modal
-        isOpen={true}
-        placement="center"
-        onOpenChange={onOpenChange}
-        className="bg-black z-40 "
-      >
-        <ModalHeader>Header modal</ModalHeader>
-        <ModalContent>kdkdkdkdk</ModalContent>
-      </Modal>
     </div>
   );
 }

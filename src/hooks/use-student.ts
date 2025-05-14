@@ -1,23 +1,35 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { makeRequest } from "@/utils";
 import { Student, StudentFormValue } from "@/types";
+import { useAuth } from "@/context/AuthContext";
 
 export function useStudents() {
+  const { token } = useAuth();
   return useQuery({
     queryKey: ["students"],
     queryFn: async (): Promise<Student[]> => {
-      const res = await makeRequest.get("/students");
-      return res.data;
+      const res = await makeRequest.get("/students", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      return res.data.data;
     },
   });
 }
 
 export function useStudent(id: string) {
+  const { token } = useAuth();
+
   return useQuery({
     queryKey: ["students"],
     queryFn: async (): Promise<Student> => {
-      const res = await makeRequest.get(`/user/${id}`);
-      return res.data;
+      const res = await makeRequest.get(`/user/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      return res.data.data;
     },
     enabled: !!id,
   });
@@ -25,11 +37,16 @@ export function useStudent(id: string) {
 
 export function useCreateStudent() {
   const queryClient = useQueryClient();
+  const { token } = useAuth();
 
   return useMutation({
     mutationFn: async (data: StudentFormValue): Promise<Student> => {
-      const res = await makeRequest.post("/students", data);
-      return res.data;
+      const res = await makeRequest.post("/students", data, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      return res.data.data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["students"] });
@@ -39,6 +56,7 @@ export function useCreateStudent() {
 
 export function useUpdateStudent() {
   const queryClient = useQueryClient();
+  const { token } = useAuth();
 
   return useMutation({
     mutationFn: async ({
@@ -48,8 +66,12 @@ export function useUpdateStudent() {
       id: string;
       data: StudentFormValue;
     }): Promise<Student> => {
-      const res = await makeRequest.patch(`/user/update/${id}`, data);
-      return res.data;
+      const res = await makeRequest.patch(`/user/update/${id}`, data, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      return res.data.data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["students"] });
@@ -59,10 +81,15 @@ export function useUpdateStudent() {
 
 export function useDeleteStudent() {
   const queryClient = useQueryClient();
+  const { token } = useAuth();
 
   return useMutation({
     mutationFn: async (id: string): Promise<void> => {
-      await makeRequest.delete(`/user/${id}`);
+      await makeRequest.delete(`/user/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["students"] });

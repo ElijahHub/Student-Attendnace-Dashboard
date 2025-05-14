@@ -1,23 +1,34 @@
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { makeRequest } from "@/utils";
+import { useAuth } from "@/context/AuthContext";
 import { Course, CourseFormValue } from "@/types";
 
 export function useCourses() {
+  const { token } = useAuth();
   return useQuery({
     queryKey: ["courses"],
     queryFn: async (): Promise<Course[]> => {
-      const res = await makeRequest.get("/courses");
-      return res.data;
+      const res = await makeRequest.get("/courses", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      return res.data.data;
     },
   });
 }
 
 export function useCourse(courseCode: string) {
+  const { token } = useAuth();
   return useQuery({
     queryKey: ["courses", courseCode],
     queryFn: async (): Promise<Course> => {
-      const res = await makeRequest.get(`/courses/${courseCode}`);
-      return res.data;
+      const res = await makeRequest.get(`/courses/${courseCode}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      return res.data.data;
     },
     enabled: !!courseCode,
   });
@@ -25,11 +36,16 @@ export function useCourse(courseCode: string) {
 
 export function useCreateCourse() {
   const queryClient = useQueryClient();
+  const { token } = useAuth();
 
   return useMutation({
     mutationFn: async (data: CourseFormValue): Promise<Course> => {
-      const res = await makeRequest.post("/courses", data);
-      return res.data;
+      const res = await makeRequest.post("/courses", data, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      return res.data.data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["courses"] });
@@ -39,6 +55,7 @@ export function useCreateCourse() {
 
 export function useUpdateCourse() {
   const queryClient = useQueryClient();
+  const { token } = useAuth();
 
   return useMutation({
     mutationFn: async ({
@@ -48,8 +65,12 @@ export function useUpdateCourse() {
       id: string;
       data: CourseFormValue;
     }): Promise<Course> => {
-      const res = await makeRequest.patch(`/courses/update/${id}`, data);
-      return res.data;
+      const res = await makeRequest.patch(`/courses/update/${id}`, data, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      return res.data.data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["courses"] });
@@ -59,6 +80,7 @@ export function useUpdateCourse() {
 
 export function useAddLecturerToCourse() {
   const queryClient = useQueryClient();
+  const { token } = useAuth();
 
   return useMutation({
     mutationFn: async ({
@@ -70,9 +92,14 @@ export function useAddLecturerToCourse() {
     }): Promise<Course> => {
       const res = await makeRequest.patch(
         `/courses/update/${id}/addLecturer`,
-        lecturerIds
+        lecturerIds,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
-      return res.data;
+      return res.data.data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["courses"] });
@@ -82,6 +109,7 @@ export function useAddLecturerToCourse() {
 
 export function useRemoveLecturerFromCourse() {
   const queryClient = useQueryClient();
+  const { token } = useAuth();
 
   return useMutation({
     mutationFn: async ({
@@ -93,9 +121,14 @@ export function useRemoveLecturerFromCourse() {
     }): Promise<Course> => {
       const res = await makeRequest.patch(
         `/courses/${id}/removeLecturer`,
-        lecturerId
+        lecturerId,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
-      return res.data;
+      return res.data.data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["courses"] });
@@ -105,10 +138,15 @@ export function useRemoveLecturerFromCourse() {
 
 export function useDeleteCourse() {
   const queryClient = useQueryClient();
+  const { token } = useAuth();
 
   return useMutation({
     mutationFn: async (id: string): Promise<void> => {
-      await makeRequest.delete(`/courses/${id}`);
+      await makeRequest.delete(`/courses/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["courses"] });
