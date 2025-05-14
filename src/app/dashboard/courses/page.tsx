@@ -1,8 +1,6 @@
 "use client ";
 
 import { useState } from "react";
-import { Button, Badge, Alert, useToast, useAlert } from "@heroui/react";
-import { PageHeader, DataTable } from "@/components";
 import {
   useCourses,
   useCreateCourse,
@@ -39,21 +37,5 @@ export default function CoursesPage() {
 
   console.log(courses);
 
-  return (
-    <div className="space-y-6">
-      <PageHeader title="Courses" description="Manage Courses">
-        <Button className="flex justify-center items-center">
-          <PlusIcon className="mr-2 h-4 w-4" />
-          Add New Course
-        </Button>
-      </PageHeader>
-
-      <DataTable
-        data={[]}
-        columns={columns}
-        isLoading={false}
-        emptyText="No courses found. Add course to get started!"
-      />
-    </div>
-  );
+  return <div className="space-y-6"></div>;
 }

@@ -67,24 +67,18 @@ export interface PageHeaderProps {
 }
 
 export interface CourseFormProps {
-  open: boolean;
-  onClose: () => void;
   onSubmit: (data: CourseFormValue) => void;
   defaultValues?: CourseFormValue;
   isSubmitting?: boolean;
 }
 
 export interface StudentFormProps {
-  open: boolean;
-  onClose: () => void;
   onSubmit: (data: StudentFormValue) => void;
   defaultValues?: Student;
   isSubmitting?: boolean;
 }
 
 export interface LecturerFormProps {
-  open: boolean;
-  onClose: () => void;
   onSubmit: (data: LecturerFormValue) => void;
   defaultValues?: Lecturer;
   isSubmitting?: boolean;
@@ -93,10 +87,12 @@ export interface LecturerFormProps {
 export interface Column {
   key: string;
   label: string;
+  className?: string;
 }
 export interface DataTableProps {
   columns: Column[];
   data: Record<string, any>[];
+  renderRow: (item: any) => React.ReactNode;
   isLoading: Boolean;
   emptyText?: string;
 }

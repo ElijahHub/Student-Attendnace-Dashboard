@@ -1,17 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { PageHeader, DataTable } from "@/components";
-import {
-  Button,
-  Alert,
-  useDisclosure,
-  Modal,
-  ModalBody,
-  ModalContent,
-  ModalHeader,
-  ModalFooter,
-} from "@heroui/react";
 import { Column, Lecturer, LecturerFormValue } from "@/types";
 import {
   useLecturers,
@@ -29,6 +18,10 @@ export default function LecturersPage() {
 
   const columns: Column[] = [
     {
+      key: "serial",
+      label: "#",
+    },
+    {
       key: "name",
       label: "Full Name",
     },
@@ -36,25 +29,25 @@ export default function LecturersPage() {
       key: "email",
       label: "Email Address",
     },
+    {
+      key: "action",
+      label: "Actions",
+    },
   ];
 
+  const renderRow = (item: Lecturer) => (
+    <tr
+      key={item.id}
+      className="border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-lamaPurpleLight"
+    >
+      <td className="flex items-center gap-4 p-4">{item.name}</td>
+      <td className="flex items-center gap-4 p-4">{item.email}</td>
+      <td>
+        <div className="flex items-center gap-2"></div>
+      </td>
+    </tr>
+  );
   console.log(lecturers);
 
-  return (
-    <div className="space-y-6 relative ">
-      <PageHeader title="Lecturers" description="Manage university lecturers">
-        <Button className="flex justify-center items-center">
-          <PlusIcon className="mr-2 h-4 w-4" />
-          Add New Lecturer
-        </Button>
-      </PageHeader>
-      <DataTable
-        data={lecturers || []}
-        columns={columns}
-        isLoading={false}
-        emptyText="No lecturers found. Add your first lecturer to get started!"
-      />
-      {/* Lecturer form modal */}
-    </div>
-  );
+  return <div className="space-y-6 relative "></div>;
 }
