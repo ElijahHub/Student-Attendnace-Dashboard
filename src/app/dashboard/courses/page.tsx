@@ -9,6 +9,8 @@ import {
 } from "@/hooks/use-course";
 import { Column, Course, CourseFormValue } from "@/types";
 import { BookOpen, PlusIcon, Pencil, Trash2, User } from "lucide-react";
+import PageHeader from "@/components/page-header";
+import FormModal from "@/components/form-modal";
 
 export default function CoursesPage() {
   const { data: courses, isLoading } = useCourses();
@@ -37,5 +39,14 @@ export default function CoursesPage() {
 
   console.log(courses);
 
-  return <div className="space-y-6"></div>;
+  return (
+    <div className="space-y-6">
+      <PageHeader title="Courses" description="Manage university courses">
+        <button>
+          <PlusIcon className="mr-2 h-4 w-4" />
+          Add New Course
+        </button>
+      </PageHeader>
+    </div>
+  );
 }
