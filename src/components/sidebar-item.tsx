@@ -18,7 +18,7 @@ export default function SidebarItem({
         "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors",
         isActive
           ? "bg-primary text-primary-foreground hover:bg-primary/10"
-          : "text-muted-foreground hover:bg-[#eee] hover:text-foreground",
+          : "text-muted-foreground hover:bg-[#eee] hover:text-background",
         isCollapsed && "justify-center px-2"
       )}
     >

@@ -8,6 +8,7 @@ import {
   useDeleteStudent,
 } from "@/hooks/use-student";
 import { Column, Student, StudentFormValue } from "@/types";
+import {Table, TableBody, TableCell, TableColumn, TableHeader, TableRow} from "@heroui/react"
 import { PlusIcon } from "lucide-react";
 
 export default function StudentsPage() {
@@ -18,7 +19,7 @@ export default function StudentsPage() {
 
   const columns: Column[] = [
     {
-      key: "mt_number",
+      key: "matNumber",
       label: "Matric Number",
     },
     {
@@ -33,5 +34,22 @@ export default function StudentsPage() {
 
   console.log(students);
 
-  return <div className="space-y-6"></div>;
+  return (
+    <Table aria-label="Example table with dynamic content">
+      <TableHeader>
+        {columns.map((column) =>
+          <TableColumn key={column.key}>{column.label}</TableColumn>
+        )}
+      </TableHeader>
+      <TableBody>
+        {students?.map((row) =>
+          <TableRow key={row.id}>
+           <TableCell>{row.matNumber}</TableCell>
+            <TableCell>{row.name}</TableCell>
+            <TableCell>{row.email}</TableCell>
+          </TableRow>
+        )}
+      </TableBody>
+    </Table>
+  );
 }

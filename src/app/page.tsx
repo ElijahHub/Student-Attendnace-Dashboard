@@ -4,6 +4,8 @@ import Link from "next/link";
 
 import { BookOpen } from "lucide-react";
 
+import {Button} from "@heroui/react"
+
 export default function Home() {
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-background to-secondary/20 p-4">
@@ -23,6 +25,8 @@ export default function Home() {
         </p>
 
         <Link href="/dashboard">Enter Dashboard</Link>
+
+        <Button color="primary" >Click</Button>
 
         <p className="mt-8 text-sm text-muted-foreground">
           Redirecting to dashboard...

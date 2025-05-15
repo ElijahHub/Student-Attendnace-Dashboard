@@ -25,7 +25,7 @@ export default function SideBar({ className }: { className: string }) {
   return (
     <div
       className={cn(
-        "flex flex-col border-r bg-foreground text-white ",
+        "flex flex-col border-r bg-background text-white ",
         isCollapsed ? "w-[70px]" : "w-[250px]",
         "transition-all duration-300 ease-in-out",
         className
