@@ -7,18 +7,19 @@ import {
   TableHeader,
   TableRow,
   Tooltip,
-  Spinner
+  Spinner,
 } from "@heroui/react";
 import { EyeIcon, EditIcon, DeleteIcon } from "lucide-react";
 import _ from "lodash";
+import React from "react";
 
-export default function Table({
+export default function DataTable({
   columns,
   data,
-  isLoading,
-  onDelete,
   onEdit,
+  onDelete,
   onView,
+  isLoading,
   emptyText = "No Data Available",
 }: DataTableProps) {
   const renderCell = React.useCallback((user, columnKey) => {
@@ -27,30 +28,39 @@ export default function Table({
     const customRenderers = {
       actions: () => (
         <div className="relative flex items-center gap-2">
-          <Tooltip content="Details">
-            <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
+          <Tooltip content="View">
+            <span
+              onClick={() => onView(user)}
+              className="text-lg text-default-400 cursor-pointer active:opacity-50"
+            >
               <EyeIcon />
             </span>
           </Tooltip>
-          <Tooltip content="Edit user">
-            <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
+          <Tooltip content="Edit">
+            <span
+              onClick={() => onEdit(user)}
+              className="text-lg text-default-400 cursor-pointer active:opacity-50"
+            >
               <EditIcon />
             </span>
           </Tooltip>
-          <Tooltip color="danger" content="Delete user">
-            <span className="text-lg text-danger cursor-pointer active:opacity-50">
+          <Tooltip color="danger" content="Delete">
+            <span
+              onClick={() => onDelete(user)}
+              className="text-lg text-danger cursor-pointer active:opacity-50"
+            >
               <DeleteIcon />
             </span>
           </Tooltip>
         </div>
       ),
-    };
+      };
 
-    return customRenderers[columnKey]?.() ?? cellValue;
+      return customRenderers[columnKey]?.() ?? cellValue;
   }, []);
 
   return (
-    <Table aria-label="Data Table">
+    <Table aria-label="Data Table" isStriped>
       <TableHeader>
         {columns.map((column) => (
           <TableColumn key={column.key}>{column.label}</TableColumn>
@@ -58,7 +68,7 @@ export default function Table({
       </TableHeader>
       <TableBody
         emptyContent={emptyText}
-        items={data}
+        items={data || []}
         isLoading={isLoading}
         loadingContent={
           <Spinner

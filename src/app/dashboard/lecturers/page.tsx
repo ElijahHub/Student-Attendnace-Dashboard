@@ -9,6 +9,7 @@ import {
   useDeleteLecturer,
 } from "@/hooks/use-lecturer";
 import { PlusIcon } from "lucide-react";
+import DataTable from "@/components/table";
 
 export default function LecturersPage() {
   const { data: lecturers, isLoading } = useLecturers();
@@ -17,10 +18,7 @@ export default function LecturersPage() {
   const deleteLecturerMutation = useDeleteLecturer();
 
   const columns: Column[] = [
-    {
-      key: "serial",
-      label: "#",
-    },
+
     {
       key: "name",
       label: "Full Name",
@@ -30,24 +28,23 @@ export default function LecturersPage() {
       label: "Email Address",
     },
     {
-      key: "action",
+      key: "actions",
       label: "Actions",
     },
   ];
 
-  const renderRow = (item: Lecturer) => (
-    <tr
-      key={item.id}
-      className="border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-lamaPurpleLight"
-    >
-      <td className="flex items-center gap-4 p-4">{item.name}</td>
-      <td className="flex items-center gap-4 p-4">{item.email}</td>
-      <td>
-        <div className="flex items-center gap-2"></div>
-      </td>
-    </tr>
-  );
-  console.log(lecturers);
+  const onEdit = (id: string) => console.log(id);
+  const onDelete = (id: string) => console.log(id);
+  const onView = (id) => console.log(id, 'clicked view');
 
-  return <div className="space-y-6 relative "></div>;
+ 
+
+  return (
+    <DataTable
+      columns={columns}
+      data={lecturers}
+      isLoading={isLoading}
+      onView={onView}
+      />
+  )
 }

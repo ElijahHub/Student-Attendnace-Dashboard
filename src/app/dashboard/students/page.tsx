@@ -8,8 +8,8 @@ import {
   useDeleteStudent,
 } from "@/hooks/use-student";
 import { Column, Student, StudentFormValue } from "@/types";
-import {Table, TableBody, TableCell, TableColumn, TableHeader, TableRow} from "@heroui/react"
 import { PlusIcon } from "lucide-react";
+import DataTable from "@/components/table"
 
 export default function StudentsPage() {
   const { data: students, isLoading } = useStudents();
@@ -30,26 +30,21 @@ export default function StudentsPage() {
       key: "email",
       label: "Email Address",
     },
+    {
+      key: "actions",
+      label: "Actions",
+    },
   ];
 
-  console.log(students);
+  const onEdit = (id: string) => console.log(id);
+  const onDelete = (id: string) => console.log(id);
+  const onView = (id: string) => console.log(id);
 
   return (
-    <Table aria-label="Example table with dynamic content">
-      <TableHeader>
-        {columns.map((column) =>
-          <TableColumn key={column.key}>{column.label}</TableColumn>
-        )}
-      </TableHeader>
-      <TableBody>
-        {students?.map((row) =>
-          <TableRow key={row.id}>
-           <TableCell>{row.matNumber}</TableCell>
-            <TableCell>{row.name}</TableCell>
-            <TableCell>{row.email}</TableCell>
-          </TableRow>
-        )}
-      </TableBody>
-    </Table>
+    <DataTable
+      columns={columns}
+      data={students}
+      isLoading={isLoading}
+      />
   );
 }

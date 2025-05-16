@@ -10,10 +10,11 @@ import Input from "./input";
 export default function CourseForm({
   onSubmit,
   defaultValues,
+  onOpen,
+  onOpenChange,
   isSubmitting = false,
 }: CourseFormProps) {
   const isEditing = !!defaultValues;
-  const { data: lecturers, isLoading } = useLecturers();
 
   const defaultFormValues: CourseFormValue = {
     courseCode: "",
@@ -48,7 +49,7 @@ export default function CourseForm({
   const handleLecturerChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedLecturers = Array.from(
       e.target.selectedOptions,
-      (option) => option.value
+      (option) => option.value,
     );
     const currentLecturers = watch("lecturersId") || [];
     const updatedLecturers = _.uniq([
@@ -58,49 +59,34 @@ export default function CourseForm({
     setValue("lecturersId", updatedLecturers);
   };
   return (
-    <form
-      className="flex flex-col gap-8"
-      onSubmit={handleSubmit(processSubmit)}
-    >
-      <h1 className="text-lg font-semibold leading-none tracking-tight">
-        {isEditing ? "Edit Course" : "Add New Course"}
-      </h1>
-      <h3 className="text-sm text-muted-foreground">
-        {isEditing
-          ? "Update the course information in the form below."
-          : "Fill in the details to add a new course."}
-      </h3>
-      <div className="flex justify-center flex-col">
-        <Input
-          isRequired
-          errorMessage={errors.courseCode && errors.courseCode.message}
-          label="Course Code"
-          placeholder="Enter Course Code"
-          name="courseCode"
-          register={register}
-          defaultValue={defaultValues?.courseCode}
-        />
-        <Input
-          isRequired
-          errorMessage={errors.courseName && errors.courseName.message}
-          label="Course Name"
-          placeholder="Enter Course Name"
-          name="courseName"
-          register={register}
-          defaultValue={defaultValues?.courseName}
-        />
-        <div className="flex flex-col max-w-xs min-h-[80px] ">
-          <label className="text-xs text-gray-500">Description</label>
-          <textarea
-            className="w-full resize-none "
-            placeholder="Course Description"
-            {...register("description")}
-          />
-        </div>
-      </div>
-      <button className="bg-blue-400 text-white p-2 rounded-md">
-        isEditing ? ( "Update Course" ) : ( "Add Course" )
-      </button>
-    </form>
+    <Modal isOpen={isOpen} placement="center" onOpenChange={onOpenChange}>
+      <ModalContent>
+        {(onClose) => (
+          <>
+            <ModalHeader className="flex flex-col gap-1">
+              <h1 className="text-lg font-semibold leading-none tracking-tight">
+                {isEditing ? "Edit Course" : "Add New Course"}
+              </h1>
+              <h3 className="text-sm text-muted-foreground">
+                {isEditing
+                  ? "Update the course information in the form below."
+                  : "Fill in the details to add a new course."}
+              </h3>
+            </ModalHeader>
+            <ModalBody>
+              <Form className="w-full max-w-xs" onSubmit={onSubmit}></Form>
+            </ModalBody>
+            <ModalFooter>
+              <Button color="danger" variant="flat" onPress={onClose}>
+                Close
+              </Button>
+              <Button color="primary" onPress={onClose}>
+                Sign in
+              </Button>
+            </ModalFooter>
+          </>
+        )}
+      </ModalContent>
+    </Modal>
   );
 }
