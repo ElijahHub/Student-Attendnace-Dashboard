@@ -1,38 +1,81 @@
 import { DataTableProps } from "@/types";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableColumn,
+  TableHeader,
+  TableRow,
+  Tooltip,
+  Spinner
+} from "@heroui/react";
+import { EyeIcon, EditIcon, DeleteIcon } from "lucide-react";
+import _ from "lodash";
 
 export default function Table({
   columns,
   data,
-  renderRow,
   isLoading,
+  onDelete,
+  onEdit,
+  onView,
   emptyText = "No Data Available",
 }: DataTableProps) {
+  const renderCell = React.useCallback((user, columnKey) => {
+    const cellValue = _.get(user, columnKey, ""); // Safely get the value
+
+    const customRenderers = {
+      actions: () => (
+        <div className="relative flex items-center gap-2">
+          <Tooltip content="Details">
+            <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
+              <EyeIcon />
+            </span>
+          </Tooltip>
+          <Tooltip content="Edit user">
+            <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
+              <EditIcon />
+            </span>
+          </Tooltip>
+          <Tooltip color="danger" content="Delete user">
+            <span className="text-lg text-danger cursor-pointer active:opacity-50">
+              <DeleteIcon />
+            </span>
+          </Tooltip>
+        </div>
+      ),
+    };
+
+    return customRenderers[columnKey]?.() ?? cellValue;
+  }, []);
+
   return (
-    <table className="w-full mt-4">
-      <thead>
-        <tr className="text-left text-gray-500 text-sm">
-          {columns.map((col) => (
-            <th key={col.key} className={col.className}>
-              {col.label}
-            </th>
-          ))}
-        </tr>
-      </thead>
-      <tbody>
-        {isLoading ? (
-          <tr>
-            <td colSpan={columns.length}>loading</td>
-          </tr>
-        ) : data.length === 0 ? (
-          <tr>
-            <td colSpan={columns.length}>{emptyText}</td>
-          </tr>
-        ) : (
-          <tr>
-            <td> ({data.map((item) => renderRow(item))})</td>
-          </tr>
+    <Table aria-label="Data Table">
+      <TableHeader>
+        {columns.map((column) => (
+          <TableColumn key={column.key}>{column.label}</TableColumn>
+        ))}
+      </TableHeader>
+      <TableBody
+        emptyContent={emptyText}
+        items={data}
+        isLoading={isLoading}
+        loadingContent={
+          <Spinner
+            classNames={{ label: "text-foreground mt-4" }}
+            label="Loading ..."
+            variant="wave"
+          />
+        }
+      >
+        {(item) => (
+          <TableRow key={item.id}>
+            {(columnKey) => (
+              <TableCell>{renderCell(item, columnKey)}</TableCell>
+            )}
+          </TableRow>
         )}
-      </tbody>
-    </table>
+      </TableBody>
+    </Table>
   );
 }
