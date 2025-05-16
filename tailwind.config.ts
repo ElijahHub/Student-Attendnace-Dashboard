@@ -1,5 +1,6 @@
 import type { Config } from "tailwindcss";
 import { heroui } from "@heroui/react";
+import { fontFamily } from "tailwindcss/defaultTheme";
 
 export default {
   content: [
@@ -11,8 +12,14 @@ export default {
   theme: {
     extend: {
       colors: {
-        background: "var(--background)",
-        foreground: "var(--foreground)",
+        background: "hsl(var(--background))",
+        foreground: "hsl(var(--foreground))",
+        muted: "hsl(var(--muted))",
+        "muted-foreground": "hsl(var(--muted-foreground))",
+        border: "hsl(var(--border))",
+      },
+      fontFamily: {
+        sans: ["Inter", ...fontFamily.sans],
       },
     },
   },

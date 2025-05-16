@@ -3,17 +3,23 @@
 import { useState } from "react";
 import Link from "next/link";
 import { MoonIcon, SunIcon, BellIcon, UserCircleIcon } from "lucide-react";
+import { useTheme } from "next-themes";
 import { cn } from "@/utils";
+import {signOut} from "next-auth/react"
 
 export default function Navbar({ className }: { className: string }) {
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
 
+  const { theme, setTheme } = useTheme();
+
+  const toggleTheme = () => setTheme(theme === "dark" ? "light" : "dark");
+
   return (
     <div
       className={cn(
-        "flex h-14 items-center border-b bg-card px-4 lg:px-6",
-        className
+        "flex h-20 items-center border-none border-muted rounded-md shadow-sm   bg-background m-1 px-4 lg:px-6",
+        className,
       )}
     >
       <div className="flex flex-1 items-center gap-4">
@@ -23,7 +29,16 @@ export default function Navbar({ className }: { className: string }) {
       </div>
 
       <div className="flex items-center gap-4">
-        {/* Notifications dropdown */}
+        {/* Theme toggle */}
+        <button
+          onClick={toggleTheme}
+          className="flex h-8 w-8 items-center justify-center rounded-md hover:bg-muted"
+          aria-label="Toggle dark mode"
+        >
+          {theme === "dark" ? <SunIcon size={20} /> : <MoonIcon size={20} />}
+        </button>
+
+        {/* Notifications */}
         <div className="relative">
           <button
             onClick={() => setIsNotificationsOpen(!isNotificationsOpen)}
@@ -36,56 +51,13 @@ export default function Navbar({ className }: { className: string }) {
 
           {isNotificationsOpen && (
             <div className="absolute right-0 top-full mt-1 w-80 rounded-md border bg-card p-2 shadow-md">
-              <div className="flex items-center justify-between px-3 py-2">
-                <h3 className="font-medium">Notifications</h3>
-                <button className="text-xs text-muted-foreground hover:text-foreground">
-                  Mark all as read
-                </button>
-              </div>
-
-              <div className="mt-2 space-y-1">
-                <div className="flex gap-3 rounded-md p-2 hover:bg-muted">
-                  <div className="h-9 w-9 flex-shrink-0 rounded-full bg-primary/10"></div>
-                  <div className="flex-1">
-                    <p className="text-sm font-medium">
-                      New course registration
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      CS101: 5 new students registered
-                    </p>
-                    <p className="mt-1 text-xs text-muted-foreground">
-                      10 minutes ago
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex gap-3 rounded-md p-2 hover:bg-muted">
-                  <div className="h-9 w-9 flex-shrink-0 rounded-full bg-primary/10"></div>
-                  <div className="flex-1">
-                    <p className="text-sm font-medium">Lecturer update</p>
-                    <p className="text-xs text-muted-foreground">
-                      Dr. Johnson updated course materials
-                    </p>
-                    <p className="mt-1 text-xs text-muted-foreground">
-                      1 hour ago
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="mt-2 border-t pt-2">
-                <Link
-                  href="/dashboard/notifications"
-                  className="block rounded-md px-3 py-2 text-center text-sm text-muted-foreground hover:bg-muted hover:text-foreground"
-                >
-                  View all notifications
-                </Link>
-              </div>
+              {/* Notification content */}
+              ...
             </div>
           )}
         </div>
 
-        {/* User profile menu */}
+        {/* Profile menu */}
         <div className="relative">
           <button
             onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)}
@@ -101,32 +73,24 @@ export default function Navbar({ className }: { className: string }) {
           </button>
 
           {isProfileMenuOpen && (
-            <div className="absolute right-0 top-full mt-1 w-56 rounded-md border bg-card p-2 shadow-md">
-              <div className="border-b px-3 py-2">
-                <p className="font-medium">Admin User</p>
-                <p className="text-xs text-muted-foreground">
-                  admin@university.edu
-                </p>
-              </div>
+      <div className="absolute right-0 top-full mt-1 w-56 rounded-md border-none bg-background p-2 shadow-md z-[10]">
+        <div className="border-b px-3 py-2">
+          <p className="font-medium">Admin User</p>
+          <p className="text-xs text-muted-foreground">
+            admin@university.edu
+          </p>
+        </div>
 
-              <div className="mt-2 space-y-1">
-                <Link
-                  href="/dashboard/profile"
-                  className="block rounded-md px-3 py-2 text-sm hover:bg-muted"
-                >
-                  Profile
-                </Link>
-                <Link
-                  href="/dashboard/settings"
-                  className="block rounded-md px-3 py-2 text-sm hover:bg-muted"
-                >
-                  Settings
-                </Link>
-                <button className="block w-full rounded-md px-3 py-2 text-left text-sm hover:bg-muted">
-                  Logout
-                </button>
-              </div>
-            </div>
+        <div className="mt-2 space-y-1">
+       
+          <button
+            onClick={() => signOut()} // ✅ Logout handler
+            className="block w-full rounded-md px-3 py-2 text-left text-sm hover:bg-muted"
+          >
+            Logout
+          </button>
+        </div>
+      </div>
           )}
         </div>
       </div>

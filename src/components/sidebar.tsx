@@ -13,6 +13,7 @@ import {
   X,
 } from "lucide-react";
 import SidebarItem from "./sidebar-item";
+import {Button} from "@heroui/react"
 
 export default function SideBar({ className }: { className: string }) {
   const pathname = usePathname();
@@ -25,21 +26,21 @@ export default function SideBar({ className }: { className: string }) {
   return (
     <div
       className={cn(
-        "flex flex-col border-r bg-background text-white ",
+        "flex flex-col border-none shadow-xl rounded-r-xl bg-background text-white",
         isCollapsed ? "w-[70px]" : "w-[250px]",
         "transition-all duration-300 ease-in-out",
         className
       )}
     >
-      <div className="flex h-14 items-center border-b px-3">
+      <div className="flex h-20 items-center border-b border-muted px-3">
         <button
           onClick={toggleSidebar}
           className="flex h-8 w-8 items-center justify-center rounded-md hover:bg-muted"
         >
-          {isCollapsed ? <Menu size={20} /> : <X size={20} />}
+          {isCollapsed ? <Menu size={20} className="text-foreground" /> : <X size={20} className="text-foreground" />}
         </button>
         {!isCollapsed && (
-          <span className="ml-3 font-semibold">Admin Dashboard</span>
+          <span className="ml-3 font-semibold text-foreground ">Admin Dashboard</span>
         )}
       </div>
       <div
@@ -95,7 +96,7 @@ export default function SideBar({ className }: { className: string }) {
 
       <div
         className={cn(
-          "border-t p-3 flex-shrink-0",
+          "border-t border-muted p-3 flex-shrink-0",
           isCollapsed && "flex justify-center"
         )}
       >
