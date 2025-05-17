@@ -68,10 +68,10 @@ export interface PageHeaderProps {
 
 export interface CourseFormProps {
   onSubmit: (data: CourseFormValue) => void;
-  defaultValues?: CourseFormValue;
+  defaultValues?: Course;
   isSubmitting?: boolean;
   isOpen?: boolean;
-  onOpenChange?: (open: boolean) => void
+  onOpenChange?: (open: boolean) => void;
 }
 
 export interface StudentFormProps {
@@ -79,15 +79,16 @@ export interface StudentFormProps {
   defaultValues?: Student;
   isSubmitting?: boolean;
   onOpen?: boolean;
-  onOpenChange?: (open: boolean) => void
+  isOpen?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
 export interface LecturerFormProps {
   onSubmit: (data: LecturerFormValue) => void;
   defaultValues?: Lecturer;
   isSubmitting?: boolean;
-  onOpen?: boolean;
-  onOpenChange?: (open: boolean) => void
+  isOpen?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
 export interface Column {
@@ -98,9 +99,9 @@ export interface Column {
 export interface DataTableProps {
   columns: Column[];
   data: Record<string, any>[];
-  isLoading: Boolean;
-  onDelete?: (user:any) => void;
-  onEdit?: (user:any) => void;
-  onView?: (user:any) => void
+  isLoading: boolean;
+  onDelete: (user: any) => void;
+  onEdit: (user: any) => void;
+  onView: (user: any) => void;
   emptyText?: string;
 }

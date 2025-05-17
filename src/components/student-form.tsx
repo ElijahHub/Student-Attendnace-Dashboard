@@ -2,12 +2,22 @@
 
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
+import {
+  Button,
+  Input,
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+} from "@heroui/react";
 import { StudentFormValue, StudentFormProps } from "@/types";
-import Input from "./input";
 
 export default function StudentForm({
   onSubmit,
   defaultValues,
+  isOpen,
+  onOpenChange,
   isSubmitting = false,
 }: StudentFormProps) {
   const {
@@ -30,48 +40,66 @@ export default function StudentForm({
   };
 
   return (
-    <form
-      className="flex flex-col gap-8"
-      onSubmit={handleSubmit(processSubmit)}
-    >
-      <h1 className="text-lg font-semibold leading-none tracking-tight">
-        Update Student Information
-      </h1>
-      <h3 className="text-sm text-muted-foreground">
-        Update Student Information
-      </h3>
-      <div className="flex justify-center flex-col">
-        <Input
-          isRequired
-          errorMessage={errors.matNumber && errors.matNumber.message}
-          label="Matric Number"
-          placeholder="Enter Full Name"
-          name="matNumber"
-          register={register}
-          defaultValue={defaultValues?.matNumber}
-        />
-        <Input
-          isRequired
-          errorMessage={errors.name && errors.name.message}
-          label="Full Name"
-          placeholder="Enter Full Name"
-          name="name"
-          register={register}
-          defaultValue={defaultValues?.name}
-        />
-        <Input
-          isRequired
-          errorMessage={errors.email && errors.email.message}
-          label="Email Address"
-          placeholder="Enter Email Address"
-          name="email"
-          register={register}
-          defaultValue={defaultValues?.email}
-        />
-      </div>
-      <button className="bg-blue-400 text-white p-2 rounded-md">
-        Update Student
-      </button>
-    </form>
+    <>
+      <Modal isOpen={isOpen} placement="center" onOpenChange={onOpenChange}>
+        <ModalContent>
+          {(_) => (
+            <>
+              <ModalHeader className="flex flex-col gap-1">
+                <h1 className="text-lg font-semibold leading-none tracking-tight">
+                  Edit Student Details
+                </h1>
+                <h3 className="text-sm text-muted-foreground">
+                  Update the student information in the form below.
+                </h3>
+              </ModalHeader>
+              <ModalBody>
+                <Input
+                  label="Full Name"
+                  labelPlacement="outside"
+                  placeholder="Enter full name"
+                  {...register("matNumber", {
+                    required: "Matriculation Number is required",
+                  })}
+                  errorMessage={errors.matNumber?.message}
+                  className="w-full"
+                />
+                <Input
+                  label="Full Name"
+                  labelPlacement="outside"
+                  placeholder="Enter full name"
+                  {...register("name", {
+                    required: "Full Name is required",
+                  })}
+                  errorMessage={errors.name?.message}
+                  className="w-full"
+                />
+                <Input
+                  label="Full Name"
+                  labelPlacement="outside"
+                  placeholder="Email Address"
+                  {...register("email", {
+                    required: "Email Address is required",
+                  })}
+                  errorMessage={errors.email?.message}
+                  className="w-full"
+                />
+              </ModalBody>
+              <ModalFooter>
+                <Button
+                  color="primary"
+                  type="submit"
+                  fullWidth={true}
+                  isLoading={isSubmitting}
+                  onPress={() => handleSubmit(processSubmit)}
+                >
+                  Update Student
+                </Button>
+              </ModalFooter>
+            </>
+          )}
+        </ModalContent>
+      </Modal>
+    </>
   );
 }

@@ -1,29 +1,36 @@
 "use client";
 
+import _ from "lodash";
 import { useState } from "react";
+import { PlusIcon } from "lucide-react";
+import { useDisclosure, Button, Pagination } from "@heroui/react";
 import {
   useCourses,
   useCreateCourse,
   useUpdateCourse,
   useDeleteCourse,
-  useCourse
+  useCourse,
 } from "@/hooks/use-course";
-import { Column, Course, CourseFormValue } from "@/types";
-import { BookOpen, PlusIcon, Pencil, Trash2, User } from "lucide-react";
-import PageHeader from "@/components/page-header";
-import DataTable from "@/components/table";
-import CourseForm from "@/components/course-form";
-import {useDisclosure, Button, } from "@heroui/react"
+import { useLecturers } from "@/hooks/use-lecturer";
+import { PageHeader, DataTable, CourseForm } from "@/components";
+import type { Column, Course, CourseFormValue } from "@/types";
 
 export default function CoursesPage() {
-  const { data: courses, isLoading } = useCourses();
+  const [currentPage, setCurrentPage] = useState(1);
+  const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
+  const [isView, setIsView] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const createCourseMutation = useCreateCourse();
   const updateCourseMutation = useUpdateCourse();
   const deleteCourseMutation = useDeleteCourse();
-  const [selectedCourse, setSelectedCourse] = useState<Course | null>(null)
-  const {data: course, isLoading: isCourseLoading} = useCourse(selectedCourse?.courseCode)
 
-  const { isOpen, onOpen, onOpenChange } = useDisclosure()
+  const { data: courses, isLoading } = useCourses();
+  const { data: lecturers } = useLecturers();
+  const { data: course } = useCourse(selectedCourse?.courseCode as string);
+
+  const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
 
   const columns: Column[] = [
     {
@@ -44,28 +51,74 @@ export default function CoursesPage() {
     },
     {
       key: "actions",
-      label: "Actions"
-    }
+      label: "Actions",
+    },
   ];
 
+  const handleAddNew = () => {
+    setSelectedCourse(null);
+    onOpen();
+  };
 
-  const onEdit = (user:any) => {
-    setSelectedCourse(user || null)
-    onOpen()
-  }
+  const handleEdit = (user: Course) => {
+    setSelectedCourse(user);
+    onOpen();
+  };
+
+  const handleView = (user: Course) => {
+    setSelectedCourse(user);
+  };
+
+  const handleDeleteClick = (user: Course) => {
+    setSelectedCourse(user);
+  };
+
+  const handleFormSubmit = async (data: CourseFormValue) => {
+    setIsSubmitting(true);
+    try {
+      if (selectedCourse) {
+        await updateCourseMutation.mutateAsync({
+          id: selectedCourse.id,
+          data,
+        });
+      } else {
+        await createCourseMutation.mutateAsync(data);
+      }
+      onClose();
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (_.isEmpty(selectedCourse)) return;
+
+    try {
+      await deleteCourseMutation.mutateAsync(selectedCourse.id);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const courseData = courses?.map((course) => {
     return {
       ...course,
-      lecturers: course.lecturersId.map((lecturer) => lecturer.name).join(", "),
+      lecturers: lecturers?.map((lecturer) => {
+        if (course.lecturersId.includes(lecturer.id)) return lecturer.name;
+        return;
+      }),
     };
-  })
+  });
+
+  const paginatedData = _.chunk(courseData, 10);
+  const totalPages = paginatedData.length;
+
   return (
     <div className="space-y-6">
       <PageHeader title="Courses" description="Manage university courses">
-        <Button 
-          onPress={onOpen}
-        >
+        <Button onPress={handleAddNew}>
           <PlusIcon className="mr-2 h-4 w-4" />
           Add New Course
         </Button>
@@ -73,18 +126,28 @@ export default function CoursesPage() {
 
       <DataTable
         columns={columns}
-        data={courseData || []}
+        data={paginatedData[currentPage - 1] || []}
         isLoading={isLoading}
-        onEdit={onEdit}
-        />
+        onEdit={handleEdit}
+        onDelete={handleDeleteClick}
+        onView={handleView}
+      />
+
+      <Pagination
+        initialPage={1}
+        page={currentPage}
+        onChange={setCurrentPage}
+        total={totalPages}
+        showControls
+      />
 
       <CourseForm
-        onSubmitAction={(data: CourseFormValue) => console.log(data)}
+        onSubmit={handleFormSubmit}
         isOpen={isOpen}
         onOpenChange={onOpenChange}
-        isSubmitting={createCourseMutation.isLoading}
-        defaultValues= { course || undefined}
-        />
+        isSubmitting={isSubmitting}
+        defaultValues={course || undefined}
+      />
     </div>
   );
 }

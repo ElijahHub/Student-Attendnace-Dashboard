@@ -1,4 +1,5 @@
-import { DataTableProps } from "@/types";
+import React from "react";
+import _ from "lodash";
 import {
   Table,
   TableBody,
@@ -9,9 +10,8 @@ import {
   Tooltip,
   Spinner,
 } from "@heroui/react";
-import { EyeIcon, EditIcon, DeleteIcon } from "lucide-react";
-import _ from "lodash";
-import React from "react";
+import { EyeIcon, EditIcon, Trash2Icon } from "lucide-react";
+import type { DataTableProps } from "@/types";
 
 export default function DataTable({
   columns,
@@ -22,10 +22,10 @@ export default function DataTable({
   isLoading,
   emptyText = "No Data Available",
 }: DataTableProps) {
-  const renderCell = React.useCallback((user, columnKey) => {
+  const renderCell = React.useCallback((user: any, columnKey: any) => {
     const cellValue = _.get(user, columnKey, ""); // Safely get the value
 
-    const customRenderers = {
+    const customRenderers: any = {
       actions: () => (
         <div className="relative flex items-center gap-2">
           <Tooltip content="View">
@@ -49,14 +49,14 @@ export default function DataTable({
               onClick={() => onDelete(user)}
               className="text-lg text-danger cursor-pointer active:opacity-50"
             >
-              <DeleteIcon />
+              <Trash2Icon />
             </span>
           </Tooltip>
         </div>
       ),
-      };
+    };
 
-      return customRenderers[columnKey]?.() ?? cellValue;
+    return customRenderers[columnKey]?.() ?? cellValue;
   }, []);
 
   return (
