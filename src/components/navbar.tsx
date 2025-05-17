@@ -84,7 +84,7 @@ export default function Navbar({ className }: { className: string }) {
         <div className="mt-2 space-y-1">
        
           <button
-            onClick={() => signOut()} // ✅ Logout handler
+            onClick={() => signOut({ callbackUrl: 'auth/signin' })} 
             className="block w-full rounded-md px-3 py-2 text-left text-sm hover:bg-muted"
           >
             Logout

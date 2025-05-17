@@ -2,11 +2,25 @@
 
 import Link from "next/link";
 
+import { useEffect } from "react";
+
+import { useRouter } from "next/navigation";
+
 import { BookOpen } from "lucide-react";
 
-import {Button} from "@heroui/react"
+import { Button, Spinner } from "@heroui/react";
 
 export default function Home() {
+  const router = useRouter();
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      router.push("/dashboard")
+    }, 3000); 
+
+    return () => clearTimeout(timer); 
+  }, [router]);
+
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-background to-secondary/20 p-4">
       <div className="text-center">
@@ -21,16 +35,18 @@ export default function Home() {
         </h1>
         <p className="mb-6 max-w-md text-muted-foreground">
           Comprehensive management system for university courses, students, and
-          faculty.
+          lecturers.
         </p>
 
-        <Link href="/dashboard">Enter Dashboard</Link>
+        <Button>Enter DashBoard</Button>
 
-        <Button color="primary" >Click</Button>
-
-        <p className="mt-8 text-sm text-muted-foreground">
-          Redirecting to dashboard...
-        </p>
+        <div className="mt-8 text-sm text-muted-foreground">
+          <Spinner
+            label="Redirecting to dashboard..."
+            classNames={{ label: "text-foreground mt-4" }}
+            variant="default"
+          />
+        </div>
       </div>
     </div>
   );

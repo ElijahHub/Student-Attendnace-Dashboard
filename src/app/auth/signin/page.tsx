@@ -2,57 +2,107 @@
 
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { useForm } from "react-hook-form";
 import { useState } from "react";
+import {
+  Input,
+  Button,
+  Card,
+  CardBody,
+  CardHeader,
+  CardFooter,
+  Spinner,
+  Form
+} from "@heroui/react";
+
+type FormData = {
+  email: string;
+  password: string;
+};
 
 export default function SignInPage() {
   const router = useRouter();
-  const [error, setError] = useState("");
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FormData>();
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-    const email = formData.get("email") as string;
-    const password = formData.get("password") as string;
+  const [loading, setLoading] = useState(false);
+  const [authError, setAuthError] = useState("");
+
+  const onSubmit = async (data: FormData) => {
+    setLoading(true);
+    setAuthError("");
 
     const res = await signIn("credentials", {
       redirect: false,
-      email,
-      password,
+      email: data.email,
+      password: data.password,
     });
 
+    setLoading(false);
+
     if (res?.ok) {
-      router.push("/"); // ✅ Redirect to homepage
+      router.push("/");
     } else {
-      setError("Invalid email or password");
+      setAuthError("Invalid email or password");
     }
   };
 
   return (
-    <div className="max-w-md mx-auto mt-20 p-4 border rounded shadow">
-      <h1 className="text-2xl font-semibold mb-4">Sign In</h1>
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <input
-          name="email"
-          type="email"
-          placeholder="Email"
-          className="w-full p-2 border rounded"
-          required
-        />
-        <input
-          name="password"
-          type="password"
-          placeholder="Password"
-          className="w-full p-2 border rounded"
-          required
-        />
-        <button
-          type="submit"
-          className="w-full bg-blue-500 text-white p-2 rounded"
-        >
-          Sign In
-        </button>
-      </form>
-      {error && <p className="mt-4 text-red-500">{error}</p>}
+    <div className="flex justify-center items-center min-h-screen px-4">
+      <Card className="w-full max-w-md p-4">
+        <CardHeader className="flex justify-center">
+          <h2>Sign In</h2>
+        </CardHeader>
+
+        <Form onSubmit={handleSubmit(onSubmit)}>
+          <CardBody className="gap-4">
+            <Input
+              label="Email"
+              type="email"
+              placeholder="Enter your email"
+              isInvalid={!!errors.email}
+              errorMessage={errors.email?.message}
+              {...register("email", {
+                required: "Email is required",
+              })}
+            />
+
+            <Input
+              label="Password"
+              type="password"
+              placeholder="Enter your password"
+              isInvalid={!!errors.password}
+              errorMessage={errors.password?.message}
+              {...register("password", {
+                required: "Password is required",
+              })}
+            />
+
+            {authError && (
+              <p 
+                className="text-red-500 text-sm mt-2"
+                >
+                {authError}
+              </p>
+            )}
+          </CardBody>
+
+          <CardFooter>
+            <Button
+              type="submit"
+              color="primary"
+              fullWidth
+              isLoading={loading}
+              isDisabled={loading}
+            >
+             SignIn
+            </Button>
+          </CardFooter>
+        </Form>
+      </Card>
     </div>
   );
 }
