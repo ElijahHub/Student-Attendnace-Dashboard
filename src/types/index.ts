@@ -70,7 +70,7 @@ export interface CourseFormProps {
   onSubmit: (data: CourseFormValue) => void;
   defaultValues?: CourseFormValue;
   isSubmitting?: boolean;
-  onOpen?: boolean;
+  isOpen?: boolean;
   onOpenChange?: (open: boolean) => void
 }
 

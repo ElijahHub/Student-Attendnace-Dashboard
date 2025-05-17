@@ -1,4 +1,4 @@
-"use client ";
+"use client";
 
 import { useState } from "react";
 import {
@@ -6,47 +6,85 @@ import {
   useCreateCourse,
   useUpdateCourse,
   useDeleteCourse,
+  useCourse
 } from "@/hooks/use-course";
 import { Column, Course, CourseFormValue } from "@/types";
 import { BookOpen, PlusIcon, Pencil, Trash2, User } from "lucide-react";
 import PageHeader from "@/components/page-header";
-import FormModal from "@/components/form-modal";
+import DataTable from "@/components/table";
+import CourseForm from "@/components/course-form";
+import {useDisclosure, Button, } from "@heroui/react"
 
 export default function CoursesPage() {
   const { data: courses, isLoading } = useCourses();
   const createCourseMutation = useCreateCourse();
   const updateCourseMutation = useUpdateCourse();
   const deleteCourseMutation = useDeleteCourse();
+  const [selectedCourse, setSelectedCourse] = useState<Course | null>(null)
+  const {data: course, isLoading: isCourseLoading} = useCourse(selectedCourse?.courseCode)
+
+  const { isOpen, onOpen, onOpenChange } = useDisclosure()
 
   const columns: Column[] = [
     {
-      key: "course_code",
+      key: "courseCode",
       label: "Course Code",
     },
     {
-      key: "course_name",
+      key: "courseName",
       label: "Course Name",
     },
     {
-      key: "course_description",
+      key: "description",
       label: "Course Description",
     },
     {
-      key: "course_lecturers",
+      key: "lecturers",
       label: "Course Lecturer(s)",
     },
+    {
+      key: "actions",
+      label: "Actions"
+    }
   ];
 
-  console.log(courses);
 
+  const onEdit = (user:any) => {
+    setSelectedCourse(user || null)
+    onOpen()
+  }
+
+  const courseData = courses?.map((course) => {
+    return {
+      ...course,
+      lecturers: course.lecturersId.map((lecturer) => lecturer.name).join(", "),
+    };
+  })
   return (
     <div className="space-y-6">
       <PageHeader title="Courses" description="Manage university courses">
-        <button>
+        <Button 
+          onPress={onOpen}
+        >
           <PlusIcon className="mr-2 h-4 w-4" />
           Add New Course
-        </button>
+        </Button>
       </PageHeader>
+
+      <DataTable
+        columns={columns}
+        data={courseData || []}
+        isLoading={isLoading}
+        onEdit={onEdit}
+        />
+
+      <CourseForm
+        onSubmitAction={(data: CourseFormValue) => console.log(data)}
+        isOpen={isOpen}
+        onOpenChange={onOpenChange}
+        isSubmitting={createCourseMutation.isLoading}
+        defaultValues= { course || undefined}
+        />
     </div>
   );
 }
