@@ -105,10 +105,9 @@ export default function CoursesPage() {
   const courseData = courses?.map((course) => {
     return {
       ...course,
-      lecturers: lecturers?.map((lecturer) => {
-        if (course.lecturersId.includes(lecturer.id)) return lecturer.name;
-        return;
-      }),
+      lecturers: _.filter(lecturers, (lecturer) =>
+        course.lecturersId.includes(lecturer.id)
+      ).map((lecturer) => lecturer.name),
     };
   });
 
