@@ -73,7 +73,7 @@ export default function LecturerForm({
                   className="w-full"
                 />
                 <Input
-                  label="Full Name"
+                  label="Email Address"
                   labelPlacement="outside"
                   placeholder="Email Address"
                   {...register("email", {

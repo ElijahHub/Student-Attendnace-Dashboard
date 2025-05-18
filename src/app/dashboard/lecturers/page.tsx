@@ -61,6 +61,8 @@ export default function LecturersPage() {
     },
   ];
 
+  console.log(lecturer)
+
   const handleAddNew = () => {
     setSelectedLecturer(null);
     onOpen();

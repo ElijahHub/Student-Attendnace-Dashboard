@@ -32,7 +32,9 @@ export default function CoursesPage() {
 
   const { data: lecturers } = useLecturers();
   const { data: courses, isLoading } = useCourses();
-  const { data: course } = useCourse(selectedCourse?.courseCode as string);
+  const { data: course } = useCourse(selectedCourse?.courseCode, {
+    enabled: !!selectedCourse
+  })
 
   const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
   const {
@@ -69,22 +71,24 @@ export default function CoursesPage() {
     },
   ];
 
-  const handleAddNew = () => {
-    setSelectedCourse(null);
+  const handleAddNew = async () => {
+    await setSelectedCourse(null);
     onOpen();
   };
 
-  const handleEdit = (user: Course) => {
-    setSelectedCourse(user);
+  const handleEdit = async (user: Course) => {
+   await setSelectedCourse(user);
     onOpen();
   };
 
-  const handleView = (user: Course) => {
-    setSelectedCourse(user);
+  const handleView =async (user: Course) => {
+   await setSelectedCourse(user);
+    onViewOpen();
   };
 
-  const handleDeleteClick = (user: Course) => {
-    setSelectedCourse(user);
+  const handleDeleteClick =async (user: Course) => {
+   await setSelectedCourse(user);
+    onDeleteOpen();
   };
 
   const handleFormSubmit = async (data: CourseFormValue) => {
@@ -165,7 +169,7 @@ export default function CoursesPage() {
         isOpen={isOpen}
         onOpenChange={onOpenChange}
         isSubmitting={isSubmitting}
-        defaultValues={course || undefined}
+        defaultValues={course || undefined }
       />
 
       <View
