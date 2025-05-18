@@ -11,7 +11,13 @@ import {
   useDeleteLecturer,
   useLecturer,
 } from "@/hooks/use-lecturer";
-import { PageHeader, DataTable, LecturerForm } from "@/components";
+import {
+  PageHeader,
+  DataTable,
+  LecturerForm,
+  View,
+  DeleteDialog,
+} from "@/components";
 import type { Column, Lecturer, LecturerFormValue } from "@/types";
 
 export default function LecturersPage() {
@@ -19,8 +25,6 @@ export default function LecturersPage() {
   const [selectedLecturer, setSelectedLecturer] = useState<Lecturer | null>(
     null
   );
-  const [isView, setIsView] = useState(false);
-  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const createLecturerMutation = useCreateLecturer();
@@ -31,6 +35,16 @@ export default function LecturersPage() {
   const { data: lecturer } = useLecturer(selectedLecturer?.id as string);
 
   const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
+  const {
+    isOpen: deleteOpen,
+    onOpen: onDeleteOpen,
+    onOpenChange: onDeleteOpenChange,
+  } = useDisclosure();
+  const {
+    isOpen: viewOpen,
+    onOpen: onViewOpen,
+    onOpenChange: onViewOpenChange,
+  } = useDisclosure();
 
   const columns: Column[] = [
     {
@@ -59,10 +73,12 @@ export default function LecturersPage() {
 
   const handleView = (user: Lecturer) => {
     setSelectedLecturer(user);
+    onViewOpen();
   };
 
   const handleDeleteClick = (user: Lecturer) => {
     setSelectedLecturer(user);
+    onDeleteOpen();
   };
 
   const handleFormSubmit = async (data: LecturerFormValue) => {
@@ -97,6 +113,11 @@ export default function LecturersPage() {
   const paginatedData = _.chunk(lecturers, 10);
   const totalPages = paginatedData.length;
 
+  const viewData = {
+    name: lecturer?.name,
+    email: lecturer?.email,
+  };
+
   return (
     <div className="space-y-6">
       <PageHeader title="Lecturers" description="Manage university lecturers">
@@ -129,6 +150,19 @@ export default function LecturersPage() {
         onOpenChange={onOpenChange}
         isSubmitting={isSubmitting}
         defaultValues={lecturer || undefined}
+      />
+
+      <View
+        title="Lecturer Info"
+        data={viewData}
+        onOpenChange={onViewOpenChange}
+        isOpen={viewOpen}
+      />
+
+      <DeleteDialog
+        onDelete={handleDelete}
+        onOpenChange={onDeleteOpenChange}
+        isOpen={deleteOpen}
       />
     </div>
   );

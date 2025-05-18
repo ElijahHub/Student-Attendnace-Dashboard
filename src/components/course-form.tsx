@@ -52,10 +52,6 @@ export default function CourseForm({
     }
   }, [defaultValues]);
 
-  const processSubmit = (data: CourseFormValue) => {
-    onSubmit(data);
-  };
-
   const lecturersId = watch("lecturersId");
 
   const handleLecturerChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -65,7 +61,7 @@ export default function CourseForm({
     <>
       <Modal isOpen={isOpen} placement="center" onOpenChange={onOpenChange}>
         <ModalContent>
-          {(_) => (
+          {(onClose) => (
             <>
               <ModalHeader className="flex flex-col gap-1">
                 <h1 className="text-lg font-semibold leading-none tracking-tight">
@@ -127,10 +123,14 @@ export default function CourseForm({
               <ModalFooter>
                 <Button
                   color="primary"
-                  type="submit"
                   fullWidth={true}
                   isLoading={isSubmitting}
-                  onPress={() => handleSubmit(processSubmit)}
+                  onPress={() =>
+                    handleSubmit(async (data) => {
+                      await onSubmit(data);
+                      onClose();
+                    })()
+                  }
                 >
                   {isEditing ? "Update Course" : "Add Course"}
                 </Button>

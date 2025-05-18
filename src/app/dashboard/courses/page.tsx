@@ -12,25 +12,39 @@ import {
   useCourse,
 } from "@/hooks/use-course";
 import { useLecturers } from "@/hooks/use-lecturer";
-import { PageHeader, DataTable, CourseForm } from "@/components";
+import {
+  PageHeader,
+  DataTable,
+  CourseForm,
+  View,
+  DeleteDialog,
+} from "@/components";
 import type { Column, Course, CourseFormValue } from "@/types";
 
 export default function CoursesPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
-  const [isView, setIsView] = useState(false);
-  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const createCourseMutation = useCreateCourse();
   const updateCourseMutation = useUpdateCourse();
   const deleteCourseMutation = useDeleteCourse();
 
-  const { data: courses, isLoading } = useCourses();
   const { data: lecturers } = useLecturers();
+  const { data: courses, isLoading } = useCourses();
   const { data: course } = useCourse(selectedCourse?.courseCode as string);
 
   const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
+  const {
+    isOpen: deleteOpen,
+    onOpen: onDeleteOpen,
+    onOpenChange: onDeleteOpenChange,
+  } = useDisclosure();
+  const {
+    isOpen: viewOpen,
+    onOpen: onViewOpen,
+    onOpenChange: onViewOpenChange,
+  } = useDisclosure();
 
   const columns: Column[] = [
     {
@@ -114,6 +128,12 @@ export default function CoursesPage() {
   const paginatedData = _.chunk(courseData, 10);
   const totalPages = paginatedData.length;
 
+  const viewData = {
+    "Course Code": course?.courseCode,
+    "Course Name": course?.courseName,
+    "Course Description": course?.description,
+  };
+
   return (
     <div className="space-y-6">
       <PageHeader title="Courses" description="Manage university courses">
@@ -146,6 +166,19 @@ export default function CoursesPage() {
         onOpenChange={onOpenChange}
         isSubmitting={isSubmitting}
         defaultValues={course || undefined}
+      />
+
+      <View
+        title="Lecturer Info"
+        data={viewData}
+        onOpenChange={onViewOpenChange}
+        isOpen={viewOpen}
+      />
+
+      <DeleteDialog
+        onDelete={handleDelete}
+        onOpenChange={onDeleteOpenChange}
+        isOpen={deleteOpen}
       />
     </div>
   );

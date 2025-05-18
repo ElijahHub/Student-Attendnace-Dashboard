@@ -2,7 +2,7 @@
 
 import _ from "lodash";
 import { useState } from "react";
-import { useDisclosure, Button, Pagination } from "@heroui/react";
+import { useDisclosure, Pagination } from "@heroui/react";
 import {
   useStudents,
   useCreateStudent,
@@ -10,14 +10,18 @@ import {
   useDeleteStudent,
   useStudent,
 } from "@/hooks/use-student";
-import { PageHeader, DataTable, StudentForm } from "@/components";
+import {
+  PageHeader,
+  DataTable,
+  StudentForm,
+  View,
+  DeleteDialog,
+} from "@/components";
 import type { Column, Student, StudentFormValue } from "@/types";
 
 export default function StudentsPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
-  const [isView, setIsView] = useState(false);
-  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const createStudentMutation = useCreateStudent();
@@ -25,9 +29,19 @@ export default function StudentsPage() {
   const deleteStudentMutation = useDeleteStudent();
 
   const { data: students, isLoading } = useStudents();
-  const { data: student } = useStudent(selectedStudent?.id as string);
+  const { data: student } = useStudent(selectedStudent?.id || "");
 
-  const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const {
+    isOpen: deleteOpen,
+    onOpen: onDeleteOpen,
+    onOpenChange: onDeleteOpenChange,
+  } = useDisclosure();
+  const {
+    isOpen: viewOpen,
+    onOpen: onViewOpen,
+    onOpenChange: onViewOpenChange,
+  } = useDisclosure();
 
   const columns: Column[] = [
     {
@@ -48,11 +62,6 @@ export default function StudentsPage() {
     },
   ];
 
-  const handleAddNew = () => {
-    setSelectedStudent(null);
-    onOpen();
-  };
-
   const handleEdit = (user: Student) => {
     setSelectedStudent(user);
     onOpen();
@@ -60,10 +69,12 @@ export default function StudentsPage() {
 
   const handleView = (user: Student) => {
     setSelectedStudent(user);
+    onViewOpen();
   };
 
   const handleDeleteClick = (user: Student) => {
     setSelectedStudent(user);
+    onDeleteOpen();
   };
 
   const handleFormSubmit = async (data: StudentFormValue) => {
@@ -77,7 +88,6 @@ export default function StudentsPage() {
       } else {
         await createStudentMutation.mutateAsync(data);
       }
-      onClose();
     } catch (error) {
       console.log(error);
     } finally {
@@ -97,6 +107,12 @@ export default function StudentsPage() {
 
   const paginatedData = _.chunk(students, 10);
   const totalPages = paginatedData.length;
+
+  const viewData = {
+    "Matriculation Number": student?.matNumber,
+    name: student?.name,
+    email: student?.email,
+  };
 
   return (
     <div className="space-y-6">
@@ -125,6 +141,19 @@ export default function StudentsPage() {
         onOpenChange={onOpenChange}
         isSubmitting={isSubmitting}
         defaultValues={student || undefined}
+      />
+
+      <View
+        title="Student Info"
+        data={viewData}
+        isOpen={viewOpen}
+        onOpenChange={onViewOpenChange}
+      />
+
+      <DeleteDialog
+        onDelete={handleDelete}
+        isOpen={deleteOpen}
+        onOpenChange={onDeleteOpenChange}
       />
     </div>
   );
