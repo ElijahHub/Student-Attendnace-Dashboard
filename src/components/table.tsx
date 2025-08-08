@@ -22,43 +22,6 @@ export default function DataTable({
   isLoading,
   emptyText = "No Data Available",
 }: DataTableProps) {
-  const renderCell = React.useCallback((user: any, columnKey: any) => {
-    const cellValue = _.get(user, columnKey, ""); // Safely get the value
-
-    const customRenderers: any = {
-      actions: () => (
-        <div className="relative flex items-center gap-2">
-          <Tooltip content="View">
-            <span
-              onClick={() => onView(user)}
-              className="text-lg text-default-400 cursor-pointer active:opacity-50"
-            >
-              <EyeIcon />
-            </span>
-          </Tooltip>
-          <Tooltip content="Edit">
-            <span
-              onClick={() => onEdit(user)}
-              className="text-lg text-default-400 cursor-pointer active:opacity-50"
-            >
-              <EditIcon />
-            </span>
-          </Tooltip>
-          <Tooltip color="danger" content="Delete">
-            <span
-              onClick={() => onDelete(user)}
-              className="text-lg text-danger cursor-pointer active:opacity-50"
-            >
-              <Trash2Icon />
-            </span>
-          </Tooltip>
-        </div>
-      ),
-    };
-
-    return customRenderers[columnKey]?.() ?? cellValue;
-  }, []);
-
   return (
     <Table aria-label="Data Table" isStriped>
       <TableHeader>
@@ -78,13 +41,52 @@ export default function DataTable({
           />
         }
       >
-        {(item) => (
-          <TableRow key={item.id}>
-            {(columnKey) => (
-              <TableCell>{renderCell(item, columnKey)}</TableCell>
-            )}
-          </TableRow>
-        )}
+        {(item) => {
+          const renderCell = (columnKey: string) => {
+            const cellValue = _.get(item, columnKey, "");
+
+            if (columnKey === "actions") {
+              return (
+                <div className="relative flex items-center gap-2">
+                  <Tooltip content="View">
+                    <span
+                      onClick={() => onView?.(item)}
+                      className="text-lg text-default-400 cursor-pointer active:opacity-50"
+                    >
+                      <EyeIcon />
+                    </span>
+                  </Tooltip>
+                  <Tooltip content="Edit">
+                    <span
+                      onClick={() => onEdit?.(item)}
+                      className="text-lg text-default-400 cursor-pointer active:opacity-50"
+                    >
+                      <EditIcon />
+                    </span>
+                  </Tooltip>
+                  <Tooltip color="danger" content="Delete">
+                    <span
+                      onClick={() => onDelete?.(item)}
+                      className="text-lg text-danger cursor-pointer active:opacity-50"
+                    >
+                      <Trash2Icon />
+                    </span>
+                  </Tooltip>
+                </div>
+              );
+            }
+
+            return cellValue;
+          };
+
+          return (
+            <TableRow key={item.id}>
+              {(columnKey) => (
+                <TableCell>{renderCell(String(columnKey))}</TableCell>
+              )}
+            </TableRow>
+          );
+        }}
       </TableBody>
     </Table>
   );

@@ -1,4 +1,5 @@
 "use client";
+
 import _ from "lodash";
 import {
   Modal,
@@ -16,32 +17,40 @@ export default function ViewDetails({
   onOpenChange,
 }: {
   title: string;
-  data: any;
+  data: Record<string, any>;
   isOpen: boolean;
-  onOpenChange: any;
+  onOpenChange: (open: boolean) => void;
 }) {
-  const entries = _.toPairs(data);
+  const entries = _.toPairs(data ?? {});
 
   return (
-    <>
-      <Modal isOpen={isOpen} onOpenChange={onOpenChange} placement="center">
-        <ModalContent>
-          {(onClose) => (
-            <>
+    <Modal isOpen={isOpen} onOpenChange={onOpenChange} placement="center">
+      <ModalContent>
+        {(onClose) => (
+          <>
+            {title && (
               <ModalHeader>
-                {title && (
-                  <div className="px-4 pt-4 pb-1 text-lg font-semibold">
-                    {title}
-                  </div>
-                )}
+                <div className="px-4 pt-4 pb-1 text-lg font-semibold">
+                  {title}
+                </div>
               </ModalHeader>
-              <ModalBody>
-                {entries.map(([key, value]) => (
-                  <div key={key} className="flex justify-between items-center">
+            )}
+
+            <ModalBody>
+              {entries.length === 0 ? (
+                <div className="text-sm text-default-500 italic">
+                  No details available.
+                </div>
+              ) : (
+                entries.map(([key, value]) => (
+                  <div
+                    key={key}
+                    className="flex justify-between items-start gap-2 py-1"
+                  >
                     <span className="text-sm font-medium text-default-500">
                       {_.startCase(key)}
                     </span>
-                    <span className="text-sm text-default-900">
+                    <span className="text-sm text-default-900 text-right">
                       {_.isNil(value) ? (
                         <em className="text-default-400">N/A</em>
                       ) : _.isArray(value) ? (
@@ -52,7 +61,7 @@ export default function ViewDetails({
                             value.map((item, idx) => (
                               <li key={idx} className="text-default-900">
                                 {_.isObject(item)
-                                  ? JSON.stringify(item, null, 2)
+                                  ? JSON.stringify(item)
                                   : String(item)}
                               </li>
                             ))
@@ -63,17 +72,18 @@ export default function ViewDetails({
                       )}
                     </span>
                   </div>
-                ))}
-              </ModalBody>
-              <ModalFooter>
-                <Button color="primary" onPress={() => onClose()}>
-                  Close
-                </Button>
-              </ModalFooter>
-            </>
-          )}
-        </ModalContent>
-      </Modal>
-    </>
+                ))
+              )}
+            </ModalBody>
+
+            <ModalFooter>
+              <Button color="primary" onPress={onClose}>
+                Close
+              </Button>
+            </ModalFooter>
+          </>
+        )}
+      </ModalContent>
+    </Modal>
   );
 }

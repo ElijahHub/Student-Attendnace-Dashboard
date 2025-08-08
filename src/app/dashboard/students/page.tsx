@@ -1,15 +1,16 @@
 "use client";
 
 import _ from "lodash";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useDisclosure, Pagination } from "@heroui/react";
+
 import {
   useStudents,
   useCreateStudent,
   useUpdateStudent,
   useDeleteStudent,
-  useStudent,
 } from "@/hooks/use-student";
+
 import {
   PageHeader,
   DataTable,
@@ -17,6 +18,7 @@ import {
   View,
   DeleteDialog,
 } from "@/components";
+
 import type { Column, Student, StudentFormValue } from "@/types";
 
 export default function StudentsPage() {
@@ -28,15 +30,20 @@ export default function StudentsPage() {
   const updateStudentMutation = useUpdateStudent();
   const deleteStudentMutation = useDeleteStudent();
 
-  const { data: students, isLoading } = useStudents();
-  const { data: student } = useStudent(selectedStudent?.id || "");
+  const { data: students = [], isLoading } = useStudents();
 
-  const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const {
+    isOpen: isFormOpen,
+    onOpen: onFormOpen,
+    onOpenChange: onFormOpenChange,
+  } = useDisclosure();
+
   const {
     isOpen: deleteOpen,
     onOpen: onDeleteOpen,
     onOpenChange: onDeleteOpenChange,
   } = useDisclosure();
+
   const {
     isOpen: viewOpen,
     onOpen: onViewOpen,
@@ -44,27 +51,18 @@ export default function StudentsPage() {
   } = useDisclosure();
 
   const columns: Column[] = [
-    {
-      key: "matNumber",
-      label: "Matric Number",
-    },
-    {
-      key: "name",
-      label: "Full Name",
-    },
-    {
-      key: "email",
-      label: "Email Address",
-    },
-    {
-      key: "actions",
-      label: "Actions",
-    },
+    { key: "matNumber", label: "Matric Number" },
+    { key: "name", label: "Full Name" },
+    { key: "email", label: "Email Address" },
+    { key: "actions", label: "Actions" },
   ];
+
+  const paginatedData = useMemo(() => _.chunk(students, 10), [students]);
+  const totalPages = paginatedData.length || 1;
 
   const handleEdit = (user: Student) => {
     setSelectedStudent(user);
-    onOpen();
+    onFormOpen();
   };
 
   const handleView = (user: Student) => {
@@ -88,30 +86,32 @@ export default function StudentsPage() {
       } else {
         await createStudentMutation.mutateAsync(data);
       }
+
+      setSelectedStudent(null);
+      onFormOpenChange();
     } catch (error) {
-      console.log(error);
+      console.error("Form submission error:", error);
     } finally {
       setIsSubmitting(false);
     }
   };
 
   const handleDelete = async () => {
-    if (_.isEmpty(selectedStudent)) return;
+    if (!selectedStudent?.id) return;
 
     try {
       await deleteStudentMutation.mutateAsync(selectedStudent.id);
+      setSelectedStudent(null);
+      onDeleteOpenChange();
     } catch (error) {
-      console.log(error);
+      console.error("Delete error:", error);
     }
   };
 
-  const paginatedData = _.chunk(students, 10);
-  const totalPages = paginatedData.length;
-
   const viewData = {
-    "Matriculation Number": student?.matNumber,
-    name: student?.name,
-    email: student?.email,
+    "Matriculation Number": selectedStudent?.matNumber,
+    name: selectedStudent?.name,
+    email: selectedStudent?.email,
   };
 
   return (
@@ -137,10 +137,10 @@ export default function StudentsPage() {
 
       <StudentForm
         onSubmit={handleFormSubmit}
-        isOpen={isOpen}
-        onOpenChange={onOpenChange}
+        isOpen={isFormOpen}
+        onOpenChange={onFormOpenChange}
         isSubmitting={isSubmitting}
-        defaultValues={student || undefined}
+        defaultValues={selectedStudent || undefined}
       />
 
       <View

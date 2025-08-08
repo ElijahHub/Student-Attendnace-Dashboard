@@ -18,7 +18,7 @@ export function useStudents() {
   });
 }
 
-export function useStudent(id: string) {
+export function useStudent(id: string, p0: { enabled: boolean }) {
   const { token } = useAuth();
 
   return useQuery({

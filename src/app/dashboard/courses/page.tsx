@@ -1,3 +1,4 @@
+// Fixed CoursesPage.tsx
 "use client";
 
 import _ from "lodash";
@@ -30,11 +31,11 @@ export default function CoursesPage() {
   const updateCourseMutation = useUpdateCourse();
   const deleteCourseMutation = useDeleteCourse();
 
-  const { data: lecturers } = useLecturers();
-  const { data: courses, isLoading } = useCourses();
-  const { data: course } = useCourse(selectedCourse?.courseCode, {
-    enabled: !!selectedCourse
-  })
+  const { data: lecturers = [] } = useLecturers();
+  const { data: courses = [], isLoading } = useCourses();
+  const { data: course } = useCourse(selectedCourse?.courseCode!, {
+    enabled: !!selectedCourse,
+  });
 
   const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
   const {
@@ -49,45 +50,31 @@ export default function CoursesPage() {
   } = useDisclosure();
 
   const columns: Column[] = [
-    {
-      key: "courseCode",
-      label: "Course Code",
-    },
-    {
-      key: "courseName",
-      label: "Course Name",
-    },
-    {
-      key: "description",
-      label: "Course Description",
-    },
-    {
-      key: "lecturers",
-      label: "Course Lecturer(s)",
-    },
-    {
-      key: "actions",
-      label: "Actions",
-    },
+    { key: "courseCode", label: "Course Code" },
+    { key: "courseName", label: "Course Name" },
+    { key: "description", label: "Course Description" },
+    { key: "lecturers", label: "Course Lecturer(s)" },
+    { key: "actions", label: "Actions" },
   ];
 
-  const handleAddNew = async () => {
-    await setSelectedCourse(null);
+  const handleAddNew = () => {
+    setSelectedCourse(null);
+    onOpen();
+    console.log(selectedCourse);
+  };
+
+  const handleEdit = (course: Course) => {
+    setSelectedCourse(course);
     onOpen();
   };
 
-  const handleEdit = async (user: Course) => {
-   await setSelectedCourse(user);
-    onOpen();
-  };
-
-  const handleView =async (user: Course) => {
-   await setSelectedCourse(user);
+  const handleView = (course: Course) => {
+    setSelectedCourse(course);
     onViewOpen();
   };
 
-  const handleDeleteClick =async (user: Course) => {
-   await setSelectedCourse(user);
+  const handleDeleteClick = (course: Course) => {
+    setSelectedCourse(course);
     onDeleteOpen();
   };
 
@@ -95,48 +82,53 @@ export default function CoursesPage() {
     setIsSubmitting(true);
     try {
       if (selectedCourse) {
-        await updateCourseMutation.mutateAsync({
-          id: selectedCourse.id,
-          data,
-        });
+        await updateCourseMutation.mutateAsync({ id: selectedCourse.id, data });
       } else {
-        await createCourseMutation.mutateAsync(data);
+        console.log(data);
+        await createCourseMutation.mutateAsync({
+          ...data,
+          lecturerIds: data.lecturersId,
+        });
       }
       onClose();
     } catch (error) {
-      console.log(error);
+      console.error(error);
     } finally {
       setIsSubmitting(false);
     }
   };
 
   const handleDelete = async () => {
-    if (_.isEmpty(selectedCourse)) return;
-
+    if (!selectedCourse) return;
     try {
       await deleteCourseMutation.mutateAsync(selectedCourse.id);
+      onDeleteOpenChange();
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   };
 
-  const courseData = courses?.map((course) => {
-    return {
-      ...course,
-      lecturers: _.filter(lecturers, (lecturer) =>
-        course.lecturersId.includes(lecturer.id)
-      ).map((lecturer) => lecturer.name),
-    };
-  });
+  const courseData = courses.map((course) => ({
+    ...course,
+    lecturers: lecturers
+      .filter((lecturer) => course.lecturersId.includes(lecturer.id))
+      .map((lecturer) => lecturer.name),
+  }));
 
   const paginatedData = _.chunk(courseData, 10);
   const totalPages = paginatedData.length;
 
-  const viewData = {
-    "Course Code": course?.courseCode,
-    "Course Name": course?.courseName,
-    "Course Description": course?.description,
-  };
+  const viewData = course
+    ? {
+        "Course Code": course.courseCode,
+        "Course Name": course.courseName,
+        "Course Description": course.description,
+        Lecturers: lecturers
+          .filter((l) => course.lecturersId.includes(l.id))
+          .map((l) => l.name)
+          .join(", "),
+      }
+    : {};
 
   return (
     <div className="space-y-6">
@@ -169,11 +161,11 @@ export default function CoursesPage() {
         isOpen={isOpen}
         onOpenChange={onOpenChange}
         isSubmitting={isSubmitting}
-        defaultValues={course || undefined }
+        defaultValues={course || undefined}
       />
 
       <View
-        title="Lecturer Info"
+        title="Course Info"
         data={viewData}
         onOpenChange={onViewOpenChange}
         isOpen={viewOpen}

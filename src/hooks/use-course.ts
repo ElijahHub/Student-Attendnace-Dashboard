@@ -18,7 +18,7 @@ export function useCourses() {
   });
 }
 
-export function useCourse(courseCode: string) {
+export function useCourse(courseCode: string, p0: { enabled: boolean }) {
   const { token } = useAuth();
   return useQuery({
     queryKey: ["courses", courseCode],
@@ -39,7 +39,7 @@ export function useCreateCourse() {
   const { token } = useAuth();
 
   return useMutation({
-    mutationFn: async (data: CourseFormValue): Promise<Course> => {
+    mutationFn: async (data: any): Promise<Course> => {
       const res = await makeRequest.post("/courses", data, {
         headers: {
           Authorization: `Bearer ${token}`,

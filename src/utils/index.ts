@@ -4,7 +4,8 @@ import { twMerge } from "tailwind-merge";
 import { format } from "date-fns";
 
 export const makeRequest = axios.create({
-  baseURL: "https://qrcode-attendance-app.up.railway.app/api/v1",
+  baseURL:
+    "https://qrcode-attendance-system-backend-production.up.railway.app/api/v1",
   headers: {
     "Content-Type": "application/json",
   },

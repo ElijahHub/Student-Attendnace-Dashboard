@@ -9,7 +9,6 @@ import {
   useCreateLecturer,
   useUpdateLecturer,
   useDeleteLecturer,
-  useLecturer,
 } from "@/hooks/use-lecturer";
 import {
   PageHeader,
@@ -32,7 +31,6 @@ export default function LecturersPage() {
   const deleteLecturerMutation = useDeleteLecturer();
 
   const { data: lecturers, isLoading } = useLecturers();
-  const { data: lecturer } = useLecturer(selectedLecturer?.id as string);
 
   const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
   const {
@@ -60,8 +58,6 @@ export default function LecturersPage() {
       label: "Actions",
     },
   ];
-
-  console.log(lecturer)
 
   const handleAddNew = () => {
     setSelectedLecturer(null);
@@ -116,8 +112,8 @@ export default function LecturersPage() {
   const totalPages = paginatedData.length;
 
   const viewData = {
-    name: lecturer?.name,
-    email: lecturer?.email,
+    name: selectedLecturer?.name,
+    email: selectedLecturer?.email,
   };
 
   return (
@@ -125,7 +121,7 @@ export default function LecturersPage() {
       <PageHeader title="Lecturers" description="Manage university lecturers">
         <Button onPress={handleAddNew}>
           <PlusIcon className="mr-2 h-4 w-4" />
-          Add New Course
+          Add New Lecturer
         </Button>
       </PageHeader>
 
@@ -151,7 +147,7 @@ export default function LecturersPage() {
         isOpen={isOpen}
         onOpenChange={onOpenChange}
         isSubmitting={isSubmitting}
-        defaultValues={lecturer || undefined}
+        defaultValues={selectedLecturer || undefined}
       />
 
       <View
