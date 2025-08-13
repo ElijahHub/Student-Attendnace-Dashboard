@@ -35,11 +35,16 @@ export default function LecturerForm({
     }),
   });
 
+  // ✅ Reset form based on modal state and defaultValues
   useEffect(() => {
-    if (defaultValues) {
-      reset(defaultValues);
+    if (isOpen) {
+      if (defaultValues) {
+        reset(_.defaults({}, defaultValues, defaultValues)); // editing
+      } else {
+        reset(defaultValues); // adding new
+      }
     }
-  }, [defaultValues]);
+  }, [defaultValues, isOpen]);
 
   const processSubmit = (data: LecturerFormValue) => {
     onSubmit(data);

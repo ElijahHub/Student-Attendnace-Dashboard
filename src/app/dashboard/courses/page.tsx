@@ -87,7 +87,7 @@ export default function CoursesPage() {
         console.log(data);
         await createCourseMutation.mutateAsync({
           ...data,
-          lecturerIds: data.lecturersId,
+          lecturersId: data.lecturersId,
         });
       }
       onClose();
@@ -103,6 +103,7 @@ export default function CoursesPage() {
     try {
       await deleteCourseMutation.mutateAsync(selectedCourse.id);
       onDeleteOpenChange();
+      onClose();
     } catch (error) {
       console.error(error);
     }

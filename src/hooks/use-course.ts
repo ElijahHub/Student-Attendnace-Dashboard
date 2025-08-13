@@ -39,7 +39,7 @@ export function useCreateCourse() {
   const { token } = useAuth();
 
   return useMutation({
-    mutationFn: async (data: any): Promise<Course> => {
+    mutationFn: async (data: CourseFormValue): Promise<Course> => {
       const res = await makeRequest.post("/courses", data, {
         headers: {
           Authorization: `Bearer ${token}`,
