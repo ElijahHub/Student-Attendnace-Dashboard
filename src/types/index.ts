@@ -105,3 +105,11 @@ export interface DataTableProps {
   onView: (user: any) => void;
   emptyText?: string;
 }
+
+// types/activity.ts
+export interface Activity {
+  id: number;
+  action: string;
+  user: string;
+  date: string; // ISO or YYYY-MM-DD format
+}

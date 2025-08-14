@@ -1,8 +1,11 @@
 "use client";
 
+import { useState } from "react";
+import { useActivities } from "@/hooks/use-activities";
 import { useCourses } from "@/hooks/use-course";
 import { useLecturers } from "@/hooks/use-lecturer";
 import { useStudents } from "@/hooks/use-student";
+import { Activity } from "@/types";
 import {
   Card,
   CardBody,
@@ -13,6 +16,7 @@ import {
   TableBody,
   TableRow,
   TableCell,
+  Button,
 } from "@heroui/react";
 import { Users, BookOpen, GraduationCap } from "lucide-react";
 
@@ -20,35 +24,34 @@ export default function Dashboard() {
   const { data: students } = useStudents();
   const { data: lecturers } = useLecturers();
   const { data: courses } = useCourses();
+  const { data: recentActivities } = useActivities();
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 5; // Show 5 per page
+
+  const totalPages = Math.ceil(recentActivities.length / pageSize);
+
+  const paginatedActivities = recentActivities.slice(
+    (currentPage - 1) * pageSize,
+    currentPage * pageSize
+  );
 
   const stats = [
     {
       label: "Students",
-      value: students?.length,
+      value: students?.length || 0,
       icon: <GraduationCap className="w-6 h-6 text-blue-500" />,
     },
     {
       label: "Lecturers",
-      value: lecturers?.length,
+      value: lecturers?.length || 0,
       icon: <Users className="w-6 h-6 text-green-500" />,
     },
     {
       label: "Courses",
-      value: courses?.length,
+      value: courses?.length || 0,
       icon: <BookOpen className="w-6 h-6 text-purple-500" />,
     },
-  ];
-
-  const recentActivities = [
-    { id: 1, action: "Added new student", user: "Admin", date: "2025-08-09" },
-    {
-      id: 2,
-      action: "Updated course: CSC101",
-      user: "Lecturer John",
-      date: "2025-08-09",
-    },
-    { id: 3, action: "Removed student", user: "Admin", date: "2025-08-08" },
-    { id: 4, action: "Added new lecturer", user: "Admin", date: "2025-08-08" },
   ];
 
   return (
@@ -56,7 +59,7 @@ export default function Dashboard() {
       {/* Stats Section */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
         {stats.map((stat, index) => (
-          <Card key={index} shadow="sm" className="border border-gray-200">
+          <Card key={index} shadow="sm" className="border-none">
             <CardHeader className="flex items-center gap-3">
               {stat.icon}
               <h4 className="text-lg font-semibold">{stat.label}</h4>
@@ -69,7 +72,7 @@ export default function Dashboard() {
       </div>
 
       {/* Recent Activities */}
-      <Card shadow="sm" className="border border-gray-200">
+      <Card className="border-none">
         <CardHeader>
           <h4 className="text-lg font-semibold">Recent Activities</h4>
         </CardHeader>
@@ -81,15 +84,44 @@ export default function Dashboard() {
               <TableColumn>Date</TableColumn>
             </TableHeader>
             <TableBody>
-              {recentActivities.map((activity) => (
-                <TableRow key={activity.id}>
-                  <TableCell>{activity.action}</TableCell>
-                  <TableCell>{activity.user}</TableCell>
-                  <TableCell>{activity.date}</TableCell>
+              {paginatedActivities.length > 0 ? (
+                paginatedActivities.map((activity: Activity) => (
+                  <TableRow key={activity.id}>
+                    <TableCell>{activity.action}</TableCell>
+                    <TableCell>{activity.user}</TableCell>
+                    <TableCell>{activity.date}</TableCell>
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell colSpan={3} className="text-center">
+                    No recent activities
+                  </TableCell>
                 </TableRow>
-              ))}
+              )}
             </TableBody>
           </Table>
+
+          {/* Pagination Controls */}
+          {totalPages > 1 && (
+            <div className="flex justify-between items-center mt-4">
+              <Button
+                disabled={currentPage === 1}
+                onClick={() => setCurrentPage((p) => p - 1)}
+              >
+                Previous
+              </Button>
+              <span>
+                Page {currentPage} of {totalPages}
+              </span>
+              <Button
+                disabled={currentPage === totalPages}
+                onClick={() => setCurrentPage((p) => p + 1)}
+              >
+                Next
+              </Button>
+            </div>
+          )}
         </CardBody>
       </Card>
     </div>

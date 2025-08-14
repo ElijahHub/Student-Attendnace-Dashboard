@@ -21,6 +21,7 @@ import {
   DeleteDialog,
 } from "@/components";
 import type { Column, Course, CourseFormValue } from "@/types";
+import { useAddActivity } from "@/hooks/use-activities";
 
 export default function CoursesPage() {
   const [currentPage, setCurrentPage] = useState(1);
@@ -30,6 +31,8 @@ export default function CoursesPage() {
   const createCourseMutation = useCreateCourse();
   const updateCourseMutation = useUpdateCourse();
   const deleteCourseMutation = useDeleteCourse();
+
+  const { mutate: addActivity } = useAddActivity();
 
   const { data: lecturers = [] } = useLecturers();
   const { data: courses = [], isLoading } = useCourses();
@@ -60,12 +63,21 @@ export default function CoursesPage() {
   const handleAddNew = () => {
     setSelectedCourse(null);
     onOpen();
-    console.log(selectedCourse);
+    addActivity({
+      action: "Added new course",
+      user: "Admin",
+      date: new Date().toISOString().split("T")[0],
+    });
   };
 
   const handleEdit = (course: Course) => {
     setSelectedCourse(course);
     onOpen();
+    addActivity({
+      action: " Edited course",
+      user: "Admin",
+      date: new Date().toISOString().split("T")[0],
+    });
   };
 
   const handleView = (course: Course) => {
@@ -104,6 +116,11 @@ export default function CoursesPage() {
       await deleteCourseMutation.mutateAsync(selectedCourse.id);
       onDeleteOpenChange();
       onClose();
+      addActivity({
+        action: `Deleted ${selectedCourse.courseCode} course`,
+        user: "Admin",
+        date: new Date().toISOString().split("T")[0],
+      });
     } catch (error) {
       console.error(error);
     }

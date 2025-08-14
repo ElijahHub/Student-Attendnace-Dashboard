@@ -18,6 +18,7 @@ import {
   DeleteDialog,
 } from "@/components";
 import type { Column, Lecturer, LecturerFormValue } from "@/types";
+import { useAddActivity } from "@/hooks/use-activities";
 
 export default function LecturersPage() {
   const [currentPage, setCurrentPage] = useState(1);
@@ -29,6 +30,7 @@ export default function LecturersPage() {
   const createLecturerMutation = useCreateLecturer();
   const updateLecturerMutation = useUpdateLecturer();
   const deleteLecturerMutation = useDeleteLecturer();
+  const { mutate: addActivity } = useAddActivity();
 
   const { data: lecturers, isLoading } = useLecturers();
 
@@ -62,11 +64,21 @@ export default function LecturersPage() {
   const handleAddNew = () => {
     setSelectedLecturer(null);
     onOpen();
+    addActivity({
+      action: "Added new lecturer",
+      user: "Admin",
+      date: new Date().toISOString().split("T")[0],
+    });
   };
 
   const handleEdit = (user: Lecturer) => {
     setSelectedLecturer(user);
     onOpen();
+    addActivity({
+      action: `Edited ${user.name} lecturer details`,
+      user: "Admin",
+      date: new Date().toISOString().split("T")[0],
+    });
   };
 
   const handleView = (user: Lecturer) => {
@@ -103,6 +115,12 @@ export default function LecturersPage() {
 
     try {
       await deleteLecturerMutation.mutateAsync(selectedLecturer.id);
+      onClose();
+      addActivity({
+        action: `Deleted ${selectedLecturer.name} from lecturers`,
+        user: "Admin",
+        date: new Date().toISOString().split("T")[0],
+      });
     } catch (error) {
       console.log(error);
     }

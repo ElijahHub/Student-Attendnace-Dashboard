@@ -20,6 +20,7 @@ import {
 } from "@/components";
 
 import type { Column, Student, StudentFormValue } from "@/types";
+import { useAddActivity } from "@/hooks/use-activities";
 
 export default function StudentsPage() {
   const [currentPage, setCurrentPage] = useState(1);
@@ -29,6 +30,7 @@ export default function StudentsPage() {
   const createStudentMutation = useCreateStudent();
   const updateStudentMutation = useUpdateStudent();
   const deleteStudentMutation = useDeleteStudent();
+  const { mutate: addActivity } = useAddActivity();
 
   const { data: students = [], isLoading } = useStudents();
 
@@ -42,6 +44,7 @@ export default function StudentsPage() {
     isOpen: deleteOpen,
     onOpen: onDeleteOpen,
     onOpenChange: onDeleteOpenChange,
+    onClose,
   } = useDisclosure();
 
   const {
@@ -63,6 +66,11 @@ export default function StudentsPage() {
   const handleEdit = (user: Student) => {
     setSelectedStudent(user);
     onFormOpen();
+    addActivity({
+      action: `Edited ${user.matNumber} details`,
+      user: "Admin",
+      date: new Date().toISOString().split("T")[0],
+    });
   };
 
   const handleView = (user: Student) => {
@@ -103,6 +111,12 @@ export default function StudentsPage() {
       await deleteStudentMutation.mutateAsync(selectedStudent.id);
       setSelectedStudent(null);
       onDeleteOpenChange();
+      onClose();
+      addActivity({
+        action: `Deleted ${selectedStudent.matNumber} from students`,
+        user: "Admin",
+        date: new Date().toISOString().split("T")[0],
+      });
     } catch (error) {
       console.error("Delete error:", error);
     }

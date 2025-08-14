@@ -5,7 +5,7 @@ import Link from "next/link";
 import { MoonIcon, SunIcon, BellIcon, UserCircleIcon } from "lucide-react";
 import { useTheme } from "next-themes";
 import { cn } from "@/utils";
-import {signOut} from "next-auth/react"
+import { signOut } from "next-auth/react";
 
 export default function Navbar({ className }: { className: string }) {
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
@@ -19,7 +19,7 @@ export default function Navbar({ className }: { className: string }) {
     <div
       className={cn(
         "flex h-20 items-center border-none border-muted rounded-md shadow-sm   bg-background m-1 px-4 lg:px-6",
-        className,
+        className
       )}
     >
       <div className="flex flex-1 items-center gap-4">
@@ -73,24 +73,23 @@ export default function Navbar({ className }: { className: string }) {
           </button>
 
           {isProfileMenuOpen && (
-      <div className="absolute right-0 top-full mt-1 w-56 rounded-md border-none bg-background p-2 shadow-md z-[10]">
-        <div className="border-b px-3 py-2">
-          <p className="font-medium">Admin User</p>
-          <p className="text-xs text-muted-foreground">
-            admin@university.edu
-          </p>
-        </div>
+            <div className="absolute right-0 top-full mt-1 w-56 rounded-md border-none bg-background p-2 shadow-md z-[10]">
+              <div className="border-b px-3 py-2">
+                <p className="font-medium">Admin User</p>
+                <p className="text-xs text-muted-foreground">
+                  admin@university.edu
+                </p>
+              </div>
 
-        <div className="mt-2 space-y-1">
-       
-          <button
-            onClick={() => signOut({ callbackUrl: 'auth/signin' })} 
-            className="block w-full rounded-md px-3 py-2 text-left text-sm hover:bg-muted"
-          >
-            Logout
-          </button>
-        </div>
-      </div>
+              <div className="mt-2 space-y-1">
+                <button
+                  onClick={() => signOut({ callbackUrl: "/auth/signin" })}
+                  className="block w-full rounded-md px-3 py-2 text-left text-sm hover:bg-muted"
+                >
+                  Logout
+                </button>
+              </div>
+            </div>
           )}
         </div>
       </div>
