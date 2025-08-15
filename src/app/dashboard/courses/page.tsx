@@ -36,9 +36,7 @@ export default function CoursesPage() {
 
   const { data: lecturers = [] } = useLecturers();
   const { data: courses = [], isLoading } = useCourses();
-  const { data: course } = useCourse(selectedCourse?.courseCode!, {
-    enabled: !!selectedCourse,
-  });
+  const { data: course } = useCourse(selectedCourse?.courseCode!);
 
   const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
   const {
