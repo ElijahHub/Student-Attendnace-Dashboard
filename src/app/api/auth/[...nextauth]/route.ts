@@ -43,7 +43,7 @@ const handler = NextAuth({
       async authorize(credentials) {
         try {
           const res = await axios.post(
-            `https://qrcode-attendance-system-backend-production.up.railway.app/api/v1/admin/login`,
+            `https://qrcode-attendance-system-backend.onrender.com/api/v1/admin/login`,
             {
               email: credentials?.email,
               password: credentials?.password,
