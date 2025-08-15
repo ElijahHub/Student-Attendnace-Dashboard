@@ -3,13 +3,9 @@ import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { format } from "date-fns";
 
-const backendUrl = process.env.NEXT_BACKEND_URL;
-if (!backendUrl) {
-  throw new Error("Backend URL is not set in environment variables");
-}
-
 export const makeRequest = axios.create({
-  baseURL: backendUrl,
+  baseURL:
+    "https://qrcode-attendance-system-backend-production.up.railway.app/api/v1",
   withCredentials: true,
   headers: {
     "Content-Type": "application/json",
