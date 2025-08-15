@@ -42,13 +42,15 @@ const handler = NextAuth({
       },
       async authorize(credentials) {
         try {
-          const res = await axios.post(
-            `https://qrcode-attendance-system-backend.onrender.com/api/v1/admin/login`,
-            {
-              email: credentials?.email,
-              password: credentials?.password,
-            }
-          );
+          const backendUrl = process.env.NEXT_BACKEND_URL;
+          if (!backendUrl) {
+            throw new Error("Backend URL is not set in environment variables");
+          }
+
+          const res = await axios.post(`${backendUrl}/admin/login`, {
+            email: credentials?.email,
+            password: credentials?.password,
+          });
 
           const result = res.data;
           const token = result.data?.accessToken;
@@ -68,7 +70,13 @@ const handler = NextAuth({
 
           return null;
         } catch (error) {
-          console.error("Auth error:", error);
+          if (axios.isAxiosError(error)) {
+            console.error("Auth error:", error.response?.data || error.message);
+          } else if (error instanceof Error) {
+            console.error("Auth error:", error.message);
+          } else {
+            console.error("Auth error:", error);
+          }
           return null;
         }
       },
