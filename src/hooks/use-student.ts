@@ -4,47 +4,40 @@ import { Student, StudentFormValue } from "@/types";
 import { useAuth } from "@/context/AuthContext";
 
 export function useStudents() {
-  const { token } = useAuth();
+  const { token, loading } = useAuth();
   return useQuery({
     queryKey: ["students"],
     queryFn: async (): Promise<Student[]> => {
       const res = await makeRequest.get("/students", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
       });
       return res.data.data;
     },
+    enabled: !!token && !loading, // ✅ wait until token is ready
   });
 }
 
-export function useStudent(id: string, p0: { enabled: boolean }) {
-  const { token } = useAuth();
-
+export function useStudent(id: string) {
+  const { token, loading } = useAuth();
   return useQuery({
-    queryKey: ["students"],
+    queryKey: ["student", id], // ✅ unique cache per student
     queryFn: async (): Promise<Student> => {
       const res = await makeRequest.get(`/user/${id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
       });
       return res.data.data;
     },
-    enabled: !!id,
+    enabled: !!id && !!token && !loading, // ✅ wait for token and id
   });
 }
 
 export function useCreateStudent() {
   const queryClient = useQueryClient();
   const { token } = useAuth();
-
   return useMutation({
     mutationFn: async (data: StudentFormValue): Promise<Student> => {
       const res = await makeRequest.post("/students", data, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
       });
       return res.data.data;
     },
@@ -57,7 +50,6 @@ export function useCreateStudent() {
 export function useUpdateStudent() {
   const queryClient = useQueryClient();
   const { token } = useAuth();
-
   return useMutation({
     mutationFn: async ({
       id,
@@ -67,9 +59,7 @@ export function useUpdateStudent() {
       data: StudentFormValue;
     }): Promise<Student> => {
       const res = await makeRequest.patch(`/user/update/${id}`, data, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
       });
       return res.data.data;
     },
@@ -82,13 +72,10 @@ export function useUpdateStudent() {
 export function useDeleteStudent() {
   const queryClient = useQueryClient();
   const { token } = useAuth();
-
   return useMutation({
     mutationFn: async (id: string): Promise<void> => {
       await makeRequest.delete(`/user/${id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
       });
     },
     onSuccess: () => {

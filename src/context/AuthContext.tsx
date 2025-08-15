@@ -3,21 +3,35 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { getSession } from "next-auth/react";
 
-const AuthContext = createContext<{ token: string | null }>({ token: null });
+interface AuthContextType {
+  token: string | null;
+  loading: boolean;
+}
+
+const AuthContext = createContext<AuthContextType>({
+  token: null,
+  loading: true,
+});
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [token, setToken] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchToken = async () => {
       const session = await getSession();
-      if (session?.accessToken) setToken(session.accessToken);
+      if (session?.accessToken) {
+        setToken(session.accessToken);
+      }
+      setLoading(false);
     };
     fetchToken();
   }, []);
 
   return (
-    <AuthContext.Provider value={{ token }}>{children}</AuthContext.Provider>
+    <AuthContext.Provider value={{ token, loading }}>
+      {children}
+    </AuthContext.Provider>
   );
 }
 
